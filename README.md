@@ -70,6 +70,14 @@ View analytics on your completed tasks, filter through to-do lists, and gain ins
 ### Additional features
 These could be stuff like dedicated to-do lists for your everyday tasks that don't involve productivity! Something like shopping lists, travel itinerary lists and stuff of the sort.
 
+### General considerations
+* The app should be localized (initially in english and spanish)
+* There MUST be a dark mode
+* There should be really cool animations and graphics!
+* Animations should be customizable (duration, disabling)
+* There should be funny easter eggs around the app
+* There should be funny phrases made to seem as tips
+
 ## Tools used
 
 In this section you get a glimpse of the tools that were used to build this project
