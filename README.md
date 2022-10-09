@@ -91,7 +91,7 @@ In this section you get a glimpse of the tools that were used to build this proj
 * [![Stripe][Stripe]][Stripe-url]
 * [![Github][Github]][Github-url]
 * [![Git][Git]][Git-url]
-Also some I couldn't find badges for :(
+* Also some I couldn't find badges for :(
 * NextAuth
 * i18next
 
