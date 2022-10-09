@@ -85,13 +85,15 @@ In this section you get a glimpse of the tools that were used to build this proj
 * [![Next][Next.js]][Next-url]
 * [![Typescript][Typescript]][Typescript-url]
 * [![Vercel][Vercel]][Vercel-url]
-* [![Auth0][Auth0]][Auth0-url]
 * [![Supabase][Supabase]][Supabase-url]
 * [![Postgres][Postgres]][Postgres-url]
 * [![Prisma][Prisma]][Prisma-url]
 * [![Stripe][Stripe]][Stripe-url]
 * [![Github][Github]][Github-url]
 * [![Git][Git]][Git-url]
+Also some I couldn't find badges for :(
+* NextAuth
+* i18next
 
 ## Starting up
 
@@ -126,8 +128,6 @@ You're probably wondering: "That's nice and all but... how do I get started??". 
 [Next-url]: https://nextjs.org/
 [Vercel]: https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white
 [Vercel-url]: https://vercel.com/
-[Auth0]: https://img.shields.io/static/v1?style=for-the-badge&message=Auth0&color=EB5424&logo=Auth0&logoColor=FFFFFF&label=
-[Auth0-url]: https://auth0.com/
 [Stripe]: https://img.shields.io/static/v1?style=for-the-badge&message=Stripe&color=008CDD&logo=Stripe&logoColor=FFFFFF&label=
 [Stripe-url]: https://stripe.com/
 [Prisma]: https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white
