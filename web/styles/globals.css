@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: Poppins, system-ui, sans-serif;
+  }
+}
+
+:root {
+  --background: theme('colors.white');
+  --background-secondary: theme('colors.slate.50');
+  --background-third: theme('colors.slate.100');
+  --accent-dark: theme('colors.indigo.500');
+  --accent-medium: theme('colors.indigo.400');
+  --accent-light: theme('colors.indigo.300');
+  --accent-extra-light: theme('colors.indigo.200');
+  --primary-dark: theme('colors.slate.900');
+  --primary-medium: theme('colors.slate.700');
+  --primary-light: theme('colors.slate.500');
+  --primary-extra-light: theme('colors.slate.300');
+  --primary-extra-light: theme('colors.white');
+}
+
+[data-theme='dark'] {
+  --background: theme('colors.slate.800');
+  --background-secondary: theme('colors.slate.700');
+  --background-third: theme('colors.slate.600');
+  --accent-dark: theme('colors.indigo.500');
+  --accent-medium: theme('colors.indigo.400');
+  --accent-light: theme('colors.indigo.300');
+  --accent-extra-light: theme('colors.indigo.200');
+  --primary-dark: theme('colors.slate.200');
+  --primary-medium: theme('colors.slate.100');
+  --primary-light: theme('colors.slate.50');
+  --primary-extra-light: theme('colors.white');
+}
+
+[data-theme='pink'] {
+  --accent-dark: theme('colors.pink.500');
+  --accent-medium: theme('colors.pink.400');
+  --accent-light: theme('colors.pink.300');
+  --accent-extra-light: theme('colors.pink.200');
+}
+
+[data-theme='dark-pink'] {
+  --accent-dark: theme('colors.pink.500');
+  --accent-medium: theme('colors.pink.400');
+  --accent-light: theme('colors.pink.300');
+  --accent-extra-light: theme('colors.pink.200');
+  --background: theme('colors.slate.800');
+  --background-secondary: theme('colors.slate.700');
+  --background-third: theme('colors.slate.600');
+
+  --primary-dark: theme('colors.slate.200');
+  --primary-medium: theme('colors.slate.100');
+  --primary-light: theme('colors.slate.50');
+  --primary-extra-light: theme('colors.white');
+}
+
+[data-theme='green'] {
+  --accent-dark: theme('colors.green.500');
+  --accent-medium: theme('colors.green.400');
+  --accent-light: theme('colors.green.300');
+  --accent-extra-light: theme('colors.green.200');
+}
+
+[data-theme='dark-green'] {
+  --accent-dark: theme('colors.green.500');
+  --accent-medium: theme('colors.green.400');
+  --accent-light: theme('colors.green.300');
+  --accent-extra-light: theme('colors.green.200');
+  --background: theme('colors.slate.800');
+  --background-secondary: theme('colors.slate.700');
+  --background-third: theme('colors.slate.600');
+
+  --primary-dark: theme('colors.slate.200');
+  --primary-medium: theme('colors.slate.100');
+  --primary-light: theme('colors.slate.50');
+  --primary-extra-light: theme('colors.white');
+}
+
+[data-theme='amber'] {
+  --accent-dark: theme('colors.amber.500');
+  --accent-medium: theme('colors.amber.400');
+  --accent-light: theme('colors.amber.300');
+  --accent-extra-light: theme('colors.amber.200');
+}
+
+[data-theme='dark-amber'] {
+  --accent-dark: theme('colors.amber.500');
+  --accent-medium: theme('colors.amber.400');
+  --accent-light: theme('colors.amber.300');
+  --accent-extra-light: theme('colors.amber.200');
+  --background: theme('colors.slate.800');
+  --background-secondary: theme('colors.slate.700');
+  --background-third: theme('colors.slate.600');
+
+  --primary-dark: theme('colors.slate.200');
+  --primary-medium: theme('colors.slate.100');
+  --primary-light: theme('colors.slate.50');
+  --primary-extra-light: theme('colors.white');
+}
