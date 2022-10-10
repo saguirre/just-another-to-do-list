@@ -71,9 +71,7 @@ export const StaticDesktopSidebar: React.FC<StaticDesktopSidebarProps> = ({ navi
                       <div
                         className={classNames(
                           item.current
-                            ? theme === 'dark'
-                              ? 'text-th-primary-extra-light bg-th-accent-medium'
-                              : 'text-th-accent-medium bg-th-accent-medium'
+                            ? 'text-th-primary-extra-light bg-th-accent-medium'
                             : 'text-th-primary-extra-light hover:bg-th-accent-medium rounded-md hover:pl-2 hover:scale-105 w-[95%] translate-x-0.5 transition-all',
                           'group flex justify-center items-center px-2 py-2 text-sm font-medium hover:cursor-pointer rounded-md'
                         )}
