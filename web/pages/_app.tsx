@@ -1,19 +1,22 @@
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import { ThemeProvider } from 'next-themes';
-import { UserProvider } from '@supabase/auth-helpers-react';
-import { supabaseClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { SessionContextProvider } from '@supabase/auth-helpers-react';
 import { LayoutDecider } from '../layouts/LayoutDecider';
+import { useState } from 'react';
 
 const JustAnotherToDoList = ({ Component, pageProps }: AppProps) => {
+  const [supabaseClient] = useState(() => createBrowserSupabaseClient());
+
   return (
-    <UserProvider supabaseClient={supabaseClient}>
+    <SessionContextProvider supabaseClient={supabaseClient}>
       <ThemeProvider>
         <LayoutDecider>
           <Component {...pageProps} />
         </LayoutDecider>
       </ThemeProvider>
-    </UserProvider>
+    </SessionContextProvider>
   );
 };
 

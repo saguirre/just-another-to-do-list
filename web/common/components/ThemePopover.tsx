@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { useTheme } from 'next-themes';
 import { Fragment, useEffect, useState } from 'react';
 
-const solutions: {
+const themes: {
   name: string;
   theme: string;
   color: string;
@@ -31,7 +31,14 @@ const solutions: {
 
 export const ThemePopover = () => {
   const [mounted, setMounted] = useState(false);
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
+
+  const getThemeName = (name: string) => {
+    if (name.includes('-')) {
+      return `${name?.split('-')[0]} ${name?.split('-')[1]}`;
+    }
+    return name;
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -41,19 +48,19 @@ export const ThemePopover = () => {
     return null;
   }
   return (
-    <div className="fixed top-4 px-4">
+    <div className="fixed top-4 px-4 z-50">
       <Popover className="relative">
         {({ open }) => (
           <>
             <Popover.Button
               className={classNames(
-                'group inline-flex items-center rounded-md bg-th-accent-dark px-3 py-2 text-base font-medium text-th-primary-extra-light focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75',
+                'group inline-flex items-center rounded-md bg-th-accent-dark pr-3 pl-6 py-2 text-base font-medium text-th-primary-extra-light focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75',
                 {
                   'text-opacity-90': open,
                 }
               )}
             >
-              <span>Themes</span>
+              <span className="capitalize">{getThemeName(theme || 'Themes')}</span>
               <ChevronDownIcon
                 className={`${open ? '' : 'text-opacity-70'}
                   ml-2 h-5 w-5 text-th-primary-extra-light transition duration-150 ease-in-out group-hover:text-opacity-80`}
@@ -72,7 +79,7 @@ export const ThemePopover = () => {
               <Popover.Panel className="absolute -left-[100px] z-10 mt-3 w-screen max-w-sm -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-md">
                 <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                   <div className="relative grid gap-8 bg-th-background-secondary p-4 lg:grid-cols-2">
-                    {solutions.map((item) => (
+                    {themes.map((item) => (
                       <button
                         key={item.name}
                         onClick={() => setTheme(item.theme)}

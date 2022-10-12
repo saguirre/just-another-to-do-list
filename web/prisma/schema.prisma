@@ -10,43 +10,60 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id           Int       @id @default(autoincrement())
+model users {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name         String?
-  email        String    @unique
-  stripeId     String    @unique
-  isSubscribed Boolean   @default(false)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @default(now())
-  projects     Project[]
-  todos        Todo[]
-}
-
-model Project {
-  id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(100)
-  tasks     Todo[]
-  user      User?    @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-  userId    Int?
-}
-
-model Todo {
-  id           Int        @id @default(autoincrement())
-  task         String     @db.VarChar(300)
-  project      Project?   @relation(fields: [projectId], references: [id])
-  projectId    Int?
-  user         User?      @relation(fields: [userId], references: [id])
-  userId       Int?
+  email        String     @unique
+  stripeId     String?     @unique
+  isSubscribed Boolean    @default(false)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @default(now())
-  status       TodoStatus @relation(fields: [todoStatusId], references: [id])
-  todoStatusId Int
+  projects     projects[]
+  todos        todos[]
 }
 
-model TodoStatus {
-  id   Int    @id @default(autoincrement())
-  name String @db.VarChar(30)
-  todo Todo[]
+model projects {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String   @db.VarChar(100)
+  tasks     todos[]
+  user      users?   @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  userId    String   @db.Uuid
+}
+
+model todos {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  task            String        @db.VarChar(100)
+  description     String?       @db.VarChar(1000)
+  project         projects?     @relation(fields: [projectId], references: [id])
+  projectId       String        @db.Uuid
+  user            users?        @relation(fields: [userId], references: [id])
+  userId          String        @db.Uuid
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now())
+  status          todoStatus    @relation(fields: [todoStatusId], references: [id])
+  todoStatusId    String        @db.Uuid
+  tags            tags?         @relation(fields: [tagsId], references: [id])
+  tagsId          String?       @db.Uuid
+  todosPriority   todoPriority? @relation(fields: [todosPriorityId], references: [id])
+  todosPriorityId String?       @db.Uuid
+}
+
+model todoPriority {
+  id   String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String  @db.VarChar(30)
+  todo todos[]
+}
+
+model tags {
+  id    String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name  String  @unique
+  todos todos[]
+}
+
+model todoStatus {
+  id   String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String  @db.VarChar(30)
+  todo todos[]
 }

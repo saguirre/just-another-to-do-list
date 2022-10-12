@@ -1,8 +1,8 @@
 import { Transition, Dialog } from '@headlessui/react';
 import Head from 'next/head';
 import { Fragment, useState } from 'react';
-import { classNames } from '../common/utils/classNames.util';
-import { Bars3CenterLeftIcon, HomeIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import classNames from 'classnames';
+import { HomeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { StaticDesktopSidebar } from '../common/components/StaticDesktopSidebar';
 import { ThemePopover } from '../common/components/ThemePopover';
 import { LoginButton } from '../common/components/LoginButton';
@@ -111,20 +111,15 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
           collapsed={collapsed}
           setCollapsed={(collapsed: boolean) => setCollapsed(collapsed)}
         />
-        <div className="md:pl-64 flex flex-col flex-1">
-          <div className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-th-background">
-            <button
-              type="button"
-              className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden"
-              onClick={() => setSidebarOpen(true)}
-            >
-              <span className="sr-only">Open sidebar</span>
-              <Bars3CenterLeftIcon className="h-6 w-6" aria-hidden="true" />
-            </button>
-            <div className="flex justify-end w-full">
-              <LoginButton />
-              <ThemePopover />
-            </div>
+        <div
+          className={classNames('flex flex-col flex-1 transition-all duration-300', {
+            'pl-72': !collapsed,
+            'pl-28': collapsed,
+          })}
+        >
+          <div className="flex justify-end w-full">
+            <LoginButton />
+            <ThemePopover />
           </div>
           <main>{children}</main>
         </div>

@@ -1,11 +1,12 @@
 import { Popover, Transition } from '@headlessui/react';
-import { supabaseClient } from '@supabase/auth-helpers-nextjs';
 import { Provider } from '@supabase/supabase-js';
 import classNames from 'classnames';
 import { Fragment } from 'react';
 import { AiOutlineGithub } from 'react-icons/ai';
 import { FcGoogle } from 'react-icons/fc';
 import { FaDiscord } from 'react-icons/fa';
+import { useTheme } from 'next-themes';
+import { useSessionContext } from '@supabase/auth-helpers-react';
 
 const authProviders: { name: string; provider: Provider; redirectTo: string; icon: any }[] = [
   {
@@ -29,14 +30,22 @@ const authProviders: { name: string; provider: Provider; redirectTo: string; ico
 ];
 
 export const LoginButton = () => {
+  const { theme } = useTheme();
+  const { supabaseClient } = useSessionContext();
   return (
-    <div className="fixed top-4 right-40">
+    <div
+      className={classNames('fixed top-4 z-50', {
+        'right-36': !theme?.includes('dark-pink') && !theme?.includes('dark-green') && !theme?.includes('dark-amber'),
+        'right-44': theme?.includes('dark-pink'),
+        'right-48': theme?.includes('dark-green') || theme?.includes('dark-amber'),
+      })}
+    >
       <Popover className="relative">
         {({ open }) => (
           <>
             <Popover.Button
               className={classNames(
-                'group inline-flex items-center rounded-md bg-th-primary-extra-light px-6 py-2 text-base border border-th-accent-dark font-medium text-th-accent-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75',
+                'group inline-flex items-center rounded-md bg-th-background hover:bg-th-background-secondary px-6 py-2 text-base border border-th-accent-dark font-medium text-th-accent-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75',
                 {
                   'text-opacity-90': open,
                 }
@@ -53,21 +62,21 @@ export const LoginButton = () => {
               leaveFrom="opacity-100 translate-y-0"
               leaveTo="opacity-0 translate-y-1"
             >
-              <Popover.Panel className="absolute -left-[130px] z-10 mt-3 w-screen max-w-sm -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-md border border-th-primary-medium rounded-md">
-                <div className="overflow-hidden divide-y divide-th-primary-medium rounded-lg p-4 bg-th-background shadow-lg ring-1 ring-black ring-opacity-5">
+              <Popover.Panel className="absolute -left-[130px] z-10 mt-3 w-screen max-w-sm -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-md rounded-md">
+                <div className="overflow-hidden divide-y divide-th-primary-medium rounded-lg p-4  bg-th-background-secondary shadow-lg ring-1 ring-black ring-opacity-5">
                   <div className="flex flex-col items-center justify-center">
                     <span className="text-th-primary-light text-center mb-4">
                       Forget about passwords! Sign in using your favorite Auth provider!
                     </span>
                   </div>
-                  <div className="relative grid gap-8 pt-6 pb-4 px-6 bg-th-background lg:grid-cols-2">
+                  <div className="relative grid gap-8 pt-6 pb-4 px-6  bg-th-background-secondary lg:grid-cols-2">
                     {authProviders.map((item) => (
                       <button
                         key={item.name}
                         onClick={() => {
-                          supabaseClient.auth.signIn({ provider: item.provider }, { redirectTo: item.redirectTo });
+                          supabaseClient.auth.signInWithOAuth({ provider: item.provider });
                         }}
-                        className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-th-background-secondary focus:outline-none focus-visible:ring focus-visible:ring-th-accent-medium focus-visible:ring-opacity-50"
+                        className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-th-background-third focus:outline-none focus-visible:ring focus-visible:ring-th-accent-medium focus-visible:ring-opacity-50"
                       >
                         <item.icon
                           className={classNames(

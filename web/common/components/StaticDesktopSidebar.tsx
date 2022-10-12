@@ -1,7 +1,16 @@
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { Menu, Transition } from '@headlessui/react';
+import {
+  ArrowLeftOnRectangleIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronUpDownIcon,
+  UserIcon,
+} from '@heroicons/react/24/outline';
+import { useSessionContext, useUser } from '@supabase/auth-helpers-react';
 import classNames from 'classnames';
-import { useTheme } from 'next-themes';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { Fragment } from 'react';
 
 interface StaticDesktopSidebarProps {
   navigation: any[];
@@ -10,17 +19,27 @@ interface StaticDesktopSidebarProps {
 }
 
 export const StaticDesktopSidebar: React.FC<StaticDesktopSidebarProps> = ({ navigation, collapsed, setCollapsed }) => {
-  const { theme } = useTheme();
+  const router = useRouter();
+  const user = useUser();
+  const { supabaseClient } = useSessionContext();
+
+  console.log(user);
   return (
     <div
-      className={classNames('hidden md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 transition-all duration-300', {
-        'md:w-28': collapsed,
-      })}
+      className={classNames(
+        'min-h-screen h-full hidden md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 transition-all duration-300',
+        {
+          'md:w-28': collapsed,
+        }
+      )}
     >
       <div
-        className={classNames(' hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 transition-all duration-300', {
-          'md:w-20': collapsed,
-        })}
+        className={classNames(
+          'min-h-screen h-full hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 transition-all duration-300',
+          {
+            'md:w-20': collapsed,
+          }
+        )}
       >
         <div
           className={classNames('absolute top-[10%] transition-all duration-300 z-20', {
@@ -46,6 +65,61 @@ export const StaticDesktopSidebar: React.FC<StaticDesktopSidebarProps> = ({ navi
         </div>
         <div className="flex flex-col flex-grow pt-5 overflow-y-auto bg-th-accent-dark border-r border-th-accent-medium">
           <div className="mt-5 flex-1 flex flex-col">
+            {user && (
+              <Menu as="div" className="px-3 mt-1 mb-3 relative inline-block text-left">
+                <div>
+                  <Menu.Button className="group w-full bg-th-accent-medium rounded-md px-3.5 py-2 text-sm text-left font-medium text-gray hover:bg-accent-light focus:outline-none">
+                    <span className="flex w-full justify-between items-center">
+                      <span className="flex min-w-0 items-center justify-between space-x-3">
+                        <img
+                          className="w-10 h-10 bg-th-accent-medium rounded-full flex-shrink-0"
+                          src={user?.user_metadata.avatar_url}
+                          alt=""
+                        />
+                        <span className="flex-1 flex flex-col min-w-0">
+                          <span className="text-th-primary-medium text-sm font-medium truncate">{user?.email}</span>
+                          <span className="text-gray text-sm capitalize truncate">{user?.app_metadata.provider}</span>
+                        </span>
+                      </span>
+                      <ChevronUpDownIcon
+                        className="flex-shrink-0 h-5 w-5 text-gray group-hover:text-gray"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </Menu.Button>
+                </div>
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <Menu.Items className="z-10 p-0 origin-top absolute ml-4 left-28 mt-1 ring-[0.5px] ring-th-accent-medium outline-none w-56 h-fit bg-th-background-secondary -translate-x-1/2 transform rounded-lg">
+                    <Menu.Item>
+                      <button className="w-full text-start hover:bg-th-background-third text-xs text-th-primary-medium p-3 rounded-t-lg flex flex-row items-center options-center justify-start gap-2">
+                        <UserIcon className="h-4 w-4 text-th-primary-medium" />
+                        <span className="text-xs text-th-primary-medium">View Profile</span>
+                      </button>
+                    </Menu.Item>
+                    <Menu.Item>
+                      <button
+                        onClick={async () => {
+                          await supabaseClient.auth.signOut();
+                          router.push('/');
+                        }}
+                        className="w-full text-start hover:bg-th-background-third text-xs text-th-primary-medium p-3 rounded-b-lg flex flex-row items-center options-center justify-start gap-2"
+                      >
+                        <ArrowLeftOnRectangleIcon className="h-4 w-4 text-th-primary-medium" />
+                        <span className="text-xs text-th-primary-medium">Logout</span>
+                      </button>
+                    </Menu.Item>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+            )}
             <nav className="flex-1 px-2 pb-4 space-y-1">
               {navigation.map((item) => (
                 <div key={item.name}>

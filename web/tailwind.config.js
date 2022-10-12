@@ -8,6 +8,14 @@ module.exports = {
   darkMode: false,
   theme: {
     extend: {
+      borderWidth: {
+        DEFAULT: '1px',
+        '0.5': '0.5px',
+        0: '0px',
+        2: '2px',
+        4: '4px',
+        8: '8px',
+      },
       colors: {
         'th-background': 'var(--background)',
         'th-background-secondary': 'var(--background-secondary)',

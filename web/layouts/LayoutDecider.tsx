@@ -1,19 +1,15 @@
 import Head from 'next/head';
-import { User, useUser } from '@supabase/auth-helpers-react';
 import { PublicLayout } from './PublicLayout';
 import { AuthedLayout } from './AuthedLayout';
-import { useEffect, useState } from 'react';
+import { useSessionContext } from '@supabase/auth-helpers-react';
 
 interface LayoutDeciderProps {
   children: React.ReactNode;
 }
 
 export const LayoutDecider: React.FC<LayoutDeciderProps> = ({ children }) => {
-  const { user, isLoading } = useUser();
-  const [userData, setUserData] = useState<User | null>(null);
-  useEffect(() => {
-    setUserData(user);
-  }, [user]);
+  const { session } = useSessionContext();
+
   return (
     <>
       <Head>
@@ -23,15 +19,7 @@ export const LayoutDecider: React.FC<LayoutDeciderProps> = ({ children }) => {
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
       </Head>
 
-      <div>
-        {!isLoading && !userData ? (
-          <PublicLayout>{children}</PublicLayout>
-        ) : !isLoading ? (
-          <AuthedLayout>{children}</AuthedLayout>
-        ) : (
-          <div>Loading...</div>
-        )}
-      </div>
+      <div>{!session ? <PublicLayout>{children}</PublicLayout> : <AuthedLayout>{children}</AuthedLayout>}</div>
     </>
   );
 };
