@@ -23,7 +23,6 @@ export const StaticDesktopSidebar: React.FC<StaticDesktopSidebarProps> = ({ navi
   const user = useUser();
   const { supabaseClient } = useSessionContext();
 
-  console.log(user);
   return (
     <div
       className={classNames(
@@ -66,9 +65,17 @@ export const StaticDesktopSidebar: React.FC<StaticDesktopSidebarProps> = ({ navi
         <div className="flex flex-col flex-grow pt-5 overflow-y-auto bg-th-accent-dark border-r border-th-accent-medium">
           <div className="mt-5 flex-1 flex flex-col">
             {user && (
-              <Menu as="div" className="px-3 mt-1 mb-3 relative inline-block text-left">
+              <Menu as="div" className="px-2 mt-1 mb-3 relative inline-block text-left">
                 <div>
-                  <Menu.Button className="group w-full bg-th-accent-medium rounded-md px-3.5 py-2 text-sm text-left font-medium text-gray hover:bg-accent-light focus:outline-none">
+                  <Menu.Button
+                    className={classNames(
+                      'group w-full rounded-md py-2 text-sm text-left font-medium text-gray focus:outline-none transition-transform duration-300',
+                      {
+                        'px-3.5 bg-th-accent-medium hover:bg-th-accent-light': !collapsed,
+                        'px-3 bg-th-accent-dark hover:bg-th-accent-medium': collapsed,
+                      }
+                    )}
+                  >
                     <span className="flex w-full justify-between items-center">
                       <span className="flex min-w-0 items-center justify-between space-x-3">
                         <img
@@ -76,15 +83,19 @@ export const StaticDesktopSidebar: React.FC<StaticDesktopSidebarProps> = ({ navi
                           src={user?.user_metadata.avatar_url}
                           alt=""
                         />
-                        <span className="flex-1 flex flex-col min-w-0">
-                          <span className="text-th-primary-medium text-sm font-medium truncate">{user?.email}</span>
-                          <span className="text-gray text-sm capitalize truncate">{user?.app_metadata.provider}</span>
-                        </span>
+                        {!collapsed && (
+                          <span className="flex-1 flex flex-col min-w-0">
+                            <span className="text-th-primary-extra-light text-sm font-medium truncate">{user?.email}</span>
+                            <span className="text-th-primary-extra-light text-sm capitalize truncate">{user?.app_metadata.provider}</span>
+                          </span>
+                        )}
                       </span>
-                      <ChevronUpDownIcon
-                        className="flex-shrink-0 h-5 w-5 text-gray group-hover:text-gray"
-                        aria-hidden="true"
-                      />
+                      {!collapsed && (
+                        <ChevronUpDownIcon
+                          className="flex-shrink-0 h-5 w-5 text-th-primary-extra-light"
+                          aria-hidden="true"
+                        />
+                      )}
                     </span>
                   </Menu.Button>
                 </div>

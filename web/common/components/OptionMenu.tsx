@@ -1,9 +1,10 @@
 import { Popover, Transition } from '@headlessui/react';
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline';
-import { Fragment } from 'react';
+import classNames from 'classnames';
 import { OptionMenuItem } from '../models/option-menu-item';
 import { Todo } from '../models/todo';
 import { OptionMenuButton } from './OptionMenuButton';
+import { status } from '@prisma/client';
 
 interface OptionMenuProps {
   options: OptionMenuItem[];
@@ -12,14 +13,26 @@ interface OptionMenuProps {
 
 export const OptionMenu: React.FC<OptionMenuProps> = ({ options, itemAttachedToOptions }) => {
   return (
-    <Popover className="relative">
+    <Popover className="absolute right-2 top-2 z-10">
       {({ open }) => (
         <>
-          <Popover.Button className="hover:bg-th-background-secondary rounded-full p-1 flex flex-col justify-center items-center">
+          <Popover.Button
+            className={classNames(
+              'hover:bg-th-background-secondary rounded-full p-1 flex flex-col justify-center items-center transition-all',
+              {
+                'opacity-50 line-through': itemAttachedToOptions?.status === status.COMPLETED,
+                'translate-y-[200px] opacity-0 duration-500':
+                  itemAttachedToOptions?.beingUpdated && itemAttachedToOptions?.status === status.TODO,
+                'translate-x-[100px] scale-y-0 opacity-0 duration-700': itemAttachedToOptions?.beingDeleted,
+                'translate-x-0 opacity-100':
+                  !itemAttachedToOptions?.beingUpdated && itemAttachedToOptions?.status === status.TODO,
+              }
+            )}
+          >
             <EllipsisHorizontalIcon className="h-5 w-5 text-th-primary-medium" />
           </Popover.Button>
           <Transition
-            as={Fragment}
+            as="div"
             enter="transition ease-out duration-200"
             enterFrom="opacity-0 translate-y-1"
             enterTo="opacity-100 translate-y-0"

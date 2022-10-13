@@ -1,10 +1,18 @@
-import { TodoStatus } from './todo-status';
+import { status } from "@prisma/client";
 
 export interface Todo {
   id?: string;
   task?: string;
   description?: string;
   createdAt?: Date;
-  status?: TodoStatus;
-  statusId?: string;
+  userId?: string;
+  updatedAt?: Date;
+  tagsId?: string;
+  todosPriorityId?: string;
+  status?: status;
+  projectId?: string;
+  deleted?: boolean;
+  beingAdded?: boolean;
+  beingUpdated?: boolean;
+  beingDeleted?: boolean;
 }

@@ -9,75 +9,69 @@ import {
 } from '@heroicons/react/24/outline';
 import classNames from 'classnames';
 import type { NextPage } from 'next';
-import { KeyboardEvent, useEffect, useState } from 'react';
+import { KeyboardEvent, useContext, useEffect, useState } from 'react';
 import { OptionMenu } from '../common/components/OptionMenu';
 import { TodoDisclosure } from '../common/components/TodoDisclosure';
 import { OptionMenuItem } from '../common/models/option-menu-item';
 import { Todo } from '../common/models/todo';
 import { useRouter } from 'next/router';
 import { useUser } from '@supabase/auth-helpers-react';
-
-const defaultTodos: Todo[] = [
-  {
-    id: '1',
-    createdAt: new Date(),
-    task: 'Pasar a buscar ropa',
-    description: 'Pasar a buscar los 3 lavados que deje el jueves',
-    status: { id: '1', name: 'Todo' },
-  },
-  {
-    id: '2',
-    createdAt: new Date(),
-    task: 'Pasar a buscar recetas',
-    status: { id: '1', name: 'Todo' },
-  },
-  {
-    id: '3',
-    createdAt: new Date(),
-    task: 'Comprar medidor',
-    status: { id: '2', name: 'Completed' },
-  },
-  {
-    id: '4',
-    createdAt: new Date(),
-    task: 'Armar Compu',
-    status: { id: '1', name: 'Todo' },
-  },
-  {
-    id: '5',
-    createdAt: new Date(),
-    task: 'Test',
-    status: { id: '3', name: 'Deleted' },
-  },
-];
+import { status } from '@prisma/client';
+import { TodoContext } from '../common/contexts/todo.context';
+import { ServiceContext } from '../common/contexts/service.context';
+import { Spinner } from '../common/components/Spinner';
 
 const Home: NextPage = () => {
   const router = useRouter();
   const [homeMenuOptions, setHomeMenuOptions] = useState<OptionMenuItem[]>([]);
-  const [todos, setTodos] = useState<Todo[]>(defaultTodos);
+  const { todos, setTodos } = useContext(TodoContext);
+  const { todoService } = useContext(ServiceContext);
   const [showCompleted, setShowCompleted] = useState<boolean>(true);
   const [showDescription, setShowDescription] = useState<boolean>(false);
   const [selectedTodo, setSelectedTodo] = useState<Todo>();
   const [newTodoString, setNewTodoString] = useState<string>('');
+  const [todoBeingUpdated, setTodoBeingUpdated] = useState<Todo>();
+  const [loadingAdd, setLoadingAdd] = useState<boolean>(false);
+
   const user = useUser();
-  const addNewTodo = (event: KeyboardEvent<HTMLInputElement>) => {
+  const addNewTodo = async (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
+      setLoadingAdd(true);
       const newTodo: Todo = {
-        id: `${todos.length}`,
         task: newTodoString,
         createdAt: new Date(),
-        status: { id: '1', name: 'todo' },
+        status: status.TODO,
       };
-      setTodos((current) => [newTodo, ...current]);
-      setNewTodoString('');
+      const addedTodo = await todoService?.createTodo(newTodo, user?.id);
+      if (addedTodo) {
+        setTodos((current: Todo[]): Todo[] => [addedTodo, ...current]);
+        setNewTodoString('');
+      }
+      setLoadingAdd(false);
     } else if (event.key === 'Escape') {
       setNewTodoString('');
     }
   };
 
-  const deleteTodo = (todo?: Todo) => {
-    if (Object.entries(todo || {})?.length > 0) {
-      setTodos((current) => current.filter((todoFromList) => todoFromList?.id !== todo?.id));
+  const updateTodo = async (todo: Todo, status: status) => {
+    const todoToUpdate = { ...todo, beingUpdated: true };
+    setTodoBeingUpdated(todoToUpdate);
+    const updatedTodo = await todoService?.updateTodoById({ ...todo, status }, todo?.id, user?.id);
+    if (updatedTodo) {
+      setTodoBeingUpdated(undefined);
+      setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === updatedTodo.id ? updatedTodo : t)));
+    }
+  };
+
+  const deleteTodo = async (todo?: Todo) => {
+    if (todo) {
+      todo.beingDeleted = true;
+      setTodoBeingUpdated(todo);
+      const deletedTodo = await todoService?.deleteTodoById(todo?.id, user?.id);
+      if (deletedTodo) {
+        setTodoBeingUpdated(undefined);
+        setTodos((current) => current.filter((todoFromList) => todoFromList?.id !== todo?.id));
+      }
     }
   };
 
@@ -113,10 +107,53 @@ const Home: NextPage = () => {
     );
   }, [showDescription]);
 
-  const getTodo = async () => {
-    const a = await fetch(`/api/todos/${user?.id}/todo/1i01m1039cn139nc193nc9`);
-    console.log(JSON.stringify(a))
+  useEffect(() => {
+    if (todoBeingUpdated) {
+      if (todoBeingUpdated.beingAdded) {
+        setTodos((current) =>
+          current.map((todo) => {
+            if (todo.id === todoBeingUpdated.id) {
+              return { ...todo, beingAdded: true };
+            }
+            return todo;
+          })
+        );
+      } else if (todoBeingUpdated.beingUpdated) {
+        setTodos((current) =>
+          current.map((todo) => {
+            if (todo.id === todoBeingUpdated.id) {
+              return { ...todo, beingUpdated: true };
+            }
+            return todo;
+          })
+        );
+      } else if (todoBeingUpdated.beingDeleted) {
+        setTodos((current) =>
+          current.map((todo) => {
+            if (todo.id === todoBeingUpdated.id) {
+              return { ...todo, beingDeleted: true };
+            }
+            return todo;
+          })
+        );
+      }
+    } else if (todos.some((todo: Todo) => todo.beingUpdated || todo.beingDeleted || todo.beingAdded)) {
+      setTodos((current) =>
+        current.map((todo) => {
+          if (todo.beingUpdated || todo.beingDeleted) {
+            return { ...todo, beingUpdated: false, beingDeleted: false, beingAdded: false };
+          }
+          return todo;
+        })
+      );
+    }
+  }, [todoBeingUpdated]);
+
+  const getTodos = async () => {
+    const todos = await todoService?.getTodos(user?.id);
+    setTodos(todos || []);
   };
+
   useEffect(() => {
     if (router.isReady) {
       const homeMenuOptionsDefault: OptionMenuItem[] = [
@@ -138,7 +175,7 @@ const Home: NextPage = () => {
         },
       ];
       setHomeMenuOptions(homeMenuOptionsDefault);
-      getTodo();
+      getTodos();
     }
   }, [router.isReady]);
   return (
@@ -153,7 +190,7 @@ const Home: NextPage = () => {
           <h1 className="text-2xl text-th-primary-dark">Home</h1>
           <OptionMenu options={homeMenuOptions} />
         </div>
-        <div className="w-full flex flex-row items-center justify-between">
+        <div className="relative w-full flex flex-row items-center justify-between">
           <input
             placeholder="New Task..."
             onKeyDown={(e) => addNewTodo(e)}
@@ -161,53 +198,36 @@ const Home: NextPage = () => {
             value={newTodoString}
             className="rounded-md text-base w-full px-3 py-2 focus:ring-th-accent-medium focus:ring-1 focus:outline-none placeholder:text-th-primary-dark placeholder:opacity-30 text-th-primary-medium border border-th-accent-medium bg-th-background"
           />
+          {loadingAdd && (
+            <div className="absolute top-2.5 right-2.5 z-10">
+              <Spinner size="sm" className="text-th-accent-medium" />
+            </div>
+          )}
         </div>
         <div className="flex flex-col w-full items-start justify-start">
           <TodoDisclosure
             title="Todos"
-            todos={todos.filter((todoFromList) => todoFromList.status?.name?.toLowerCase() === 'todo')}
+            todos={todos
+              .filter((todoFromList) => !todoFromList?.deleted)
+              .filter((todoFromList) => todoFromList.status === status.TODO)}
             showDescription={showDescription}
             setSelectedTodo={(todo: Todo) => setSelectedTodo(todo)}
             onDelete={(todo?: Todo) => deleteTodo(todo)}
-            onChange={(todo: Todo, status: 'completed' | 'todo') => {
-              setTodos((current: Todo[]) =>
-                current.map((item: Todo) => {
-                  if (item.id === todo.id) {
-                    return {
-                      ...item,
-                      status: {
-                        ...item?.status,
-                        name: status,
-                      },
-                    };
-                  }
-                  return item;
-                })
-              );
+            onChange={(todo: Todo, status: status) => {
+              updateTodo(todo, status);
             }}
           />
           {showCompleted && (
             <TodoDisclosure
               title="Completed"
-              todos={todos.filter((todoFromList) => todoFromList.status?.name?.toLowerCase() === 'completed')}
+              todos={todos
+                .filter((todoFromList) => !todoFromList?.deleted)
+                .filter((todoFromList) => todoFromList.status === status.COMPLETED)}
               showDescription={showDescription}
               setSelectedTodo={(todo: Todo) => setSelectedTodo(todo)}
               onDelete={(todo?: Todo) => deleteTodo(todo)}
-              onChange={(todo: Todo, status: 'completed' | 'todo') => {
-                setTodos((current: Todo[]) =>
-                  current.map((item: Todo) => {
-                    if (item.id === todo.id) {
-                      return {
-                        ...item,
-                        status: {
-                          ...item?.status,
-                          name: status,
-                        },
-                      };
-                    }
-                    return item;
-                  })
-                );
+              onChange={(todo: Todo, status: status) => {
+                updateTodo(todo, status);
               }}
             />
           )}
@@ -215,7 +235,7 @@ const Home: NextPage = () => {
       </div>
       <div
         className={classNames(
-          'relative min-h-screen transition-all duration-300 h-full mt-12 flex flex-col space-y-3 p-4',
+          'min-h-screen relative transition-all duration-300 h-full mt-12 flex flex-col space-y-3 p-4',
           {
             'w-1/2 opacity-100': Object.entries(selectedTodo || {}).length > 0,
             'w-0 opacity-0': Object.entries(selectedTodo || {}).length === 0,

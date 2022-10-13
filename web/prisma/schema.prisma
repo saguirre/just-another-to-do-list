@@ -10,11 +10,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum status {
+  TODO
+  IN_PROGRESS
+  BLOCKED
+  COMPLETED
+}
+
 model users {
-  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id           Int        @id @default(autoincrement())
+  uuid         String     @unique
   name         String?
   email        String     @unique
-  stripeId     String?     @unique
+  stripeId     String?    @unique
   isSubscribed Boolean    @default(false)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @default(now())
@@ -26,10 +34,10 @@ model projects {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name      String   @db.VarChar(100)
   tasks     todos[]
-  user      users?   @relation(fields: [userId], references: [id])
+  user      users?   @relation(fields: [userId], references: [uuid])
+  userId    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-  userId    String   @db.Uuid
 }
 
 model todos {
@@ -37,13 +45,13 @@ model todos {
   task            String        @db.VarChar(100)
   description     String?       @db.VarChar(1000)
   project         projects?     @relation(fields: [projectId], references: [id])
-  projectId       String        @db.Uuid
-  user            users?        @relation(fields: [userId], references: [id])
-  userId          String        @db.Uuid
+  projectId       String?
+  user            users?        @relation(fields: [userId], references: [uuid])
+  userId          String?
+  deleted         Boolean       @default(false)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @default(now())
-  status          todoStatus    @relation(fields: [todoStatusId], references: [id])
-  todoStatusId    String        @db.Uuid
+  status          status        @default(TODO)
   tags            tags?         @relation(fields: [tagsId], references: [id])
   tagsId          String?       @db.Uuid
   todosPriority   todoPriority? @relation(fields: [todosPriorityId], references: [id])
@@ -60,10 +68,4 @@ model tags {
   id    String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name  String  @unique
   todos todos[]
-}
-
-model todoStatus {
-  id   String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name String  @db.VarChar(30)
-  todo todos[]
 }

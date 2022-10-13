@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { OptionMenuItem } from '../models/option-menu-item';
 import { Todo } from '../models/todo';
+import { Spinner } from './Spinner';
 
 interface OptionMenuButtonProps {
   option: OptionMenuItem;
@@ -19,7 +20,11 @@ export const OptionMenuButton: React.FC<OptionMenuButtonProps> = ({ option, item
         option.className
       )}
     >
-      <option.icon className={classNames('h-4 w-4 text-th-primary-medium', option.className)} />
+      {itemAttachedToOptions?.beingDeleted && option?.label?.toLowerCase() === 'delete' ? (
+        <Spinner size="sm" className="text-rose-400 ml-0" />
+      ) : (
+        <option.icon className={classNames('h-4 w-4 text-th-primary-medium', option.className)} />
+      )}
       {option.label}
     </button>
   );
