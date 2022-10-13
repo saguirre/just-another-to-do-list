@@ -1,15 +1,17 @@
 import {
   Bars3BottomLeftIcon,
   Bars3Icon,
+  CheckIcon,
   ChevronRightIcon,
   EllipsisHorizontalIcon,
   EyeIcon,
   EyeSlashIcon,
+  TrashIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import classNames from 'classnames';
 import type { NextPage } from 'next';
-import { KeyboardEvent, useContext, useEffect, useState } from 'react';
+import { KeyboardEvent, useCallback, useContext, useEffect } from 'react';
 import { OptionMenu } from '../common/components/OptionMenu';
 import { TodoDisclosure } from '../common/components/TodoDisclosure';
 import { OptionMenuItem } from '../common/models/option-menu-item';
@@ -20,6 +22,9 @@ import { status } from '@prisma/client';
 import { TodoContext } from '../common/contexts/todo.context';
 import { ServiceContext } from '../common/contexts/service.context';
 import { Spinner } from '../common/components/Spinner';
+import { debounce } from 'lodash';
+import useState from 'react-usestateref';
+import { TbTrashOff } from 'react-icons/tb';
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -28,12 +33,28 @@ const Home: NextPage = () => {
   const { todoService } = useContext(ServiceContext);
   const [showCompleted, setShowCompleted] = useState<boolean>(true);
   const [showDescription, setShowDescription] = useState<boolean>(false);
-  const [selectedTodo, setSelectedTodo] = useState<Todo>();
+  const [showDeleted, setShowDeleted] = useState<boolean>(false);
+  const [selectedTodo, setSelectedTodo, selectedTodoRef] = useState<Todo>();
   const [newTodoString, setNewTodoString] = useState<string>('');
   const [todoBeingUpdated, setTodoBeingUpdated] = useState<Todo>();
   const [loadingAdd, setLoadingAdd] = useState<boolean>(false);
+  const [autoSaving, setAutosaving] = useState<boolean>(false);
+  const [autoSaved, setAutosaved] = useState<boolean>(true);
 
   const user = useUser();
+  const debounceUpdateTodo = useCallback(
+    debounce(async (todo: Todo) => {
+      setAutosaving(true);
+      const updatedTodo = await todoService?.updateTodoById({ ...todo }, todo?.id, user?.id);
+      if (updatedTodo) {
+        setAutosaving(false);
+        setAutosaved(true);
+      }
+      setAutosaving(false);
+    }, 500),
+    []
+  );
+
   const addNewTodo = async (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       setLoadingAdd(true);
@@ -53,10 +74,13 @@ const Home: NextPage = () => {
     }
   };
 
-  const updateTodo = async (todo: Todo, status: status) => {
-    const todoToUpdate = { ...todo, beingUpdated: true };
+  const updateTodo = async (todo: Todo, isSlash?: boolean) => {
+    let todoToUpdate = todo;
+    if (isSlash) {
+      todoToUpdate = { ...todo, beingSlashed: true };
+    }
     setTodoBeingUpdated(todoToUpdate);
-    const updatedTodo = await todoService?.updateTodoById({ ...todo, status }, todo?.id, user?.id);
+    const updatedTodo = await todoService?.updateTodoById({ ...todo }, todo?.id, user?.id);
     if (updatedTodo) {
       setTodoBeingUpdated(undefined);
       setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === updatedTodo.id ? updatedTodo : t)));
@@ -65,12 +89,27 @@ const Home: NextPage = () => {
 
   const deleteTodo = async (todo?: Todo) => {
     if (todo) {
-      todo.beingDeleted = true;
-      setTodoBeingUpdated(todo);
+      const todoToDelete = { ...todo, beingDeleted: true };
+      setTodoBeingUpdated(todoToDelete);
       const deletedTodo = await todoService?.deleteTodoById(todo?.id, user?.id);
       if (deletedTodo) {
         setTodoBeingUpdated(undefined);
-        setTodos((current) => current.filter((todoFromList) => todoFromList?.id !== todo?.id));
+        if (deletedTodo?.id === selectedTodoRef.current?.id) {
+          setSelectedTodo(undefined);
+        }
+        setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === deletedTodo.id ? deletedTodo : t)));
+      }
+    }
+  };
+
+  const reviveTodo = async (todo?: Todo) => {
+    if (todo) {
+      const todoToRevive = { ...todo, beingRevived: true };
+      setTodoBeingUpdated(todoToRevive);
+      const revivedTodo = await todoService?.updateTodoById({ ...todo, deleted: false }, todo?.id, user?.id);
+      if (revivedTodo) {
+        setTodoBeingUpdated(undefined);
+        setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === revivedTodo.id ? revivedTodo : t)));
       }
     }
   };
@@ -81,7 +120,7 @@ const Home: NextPage = () => {
         if (option.label.toLowerCase().includes('completed')) {
           const newOption = {
             ...option,
-            label: showCompleted ? 'Hide completed' : 'Show completed',
+            label: showCompleted ? 'Hide Completed' : 'Show Completed',
             icon: showCompleted ? EyeSlashIcon : EyeIcon,
           };
           return newOption;
@@ -90,6 +129,22 @@ const Home: NextPage = () => {
       })
     );
   }, [showCompleted]);
+
+  useEffect(() => {
+    setHomeMenuOptions((current) =>
+      current.map((option: OptionMenuItem) => {
+        if (option.label.toLowerCase().includes('deleted')) {
+          const newOption = {
+            ...option,
+            label: showDeleted ? 'Hide Deleted' : 'Show Deleted',
+            icon: showDeleted ? TbTrashOff : TrashIcon,
+          };
+          return newOption;
+        }
+        return option;
+      })
+    );
+  }, [showDeleted]);
 
   useEffect(() => {
     setHomeMenuOptions((current) =>
@@ -118,11 +173,11 @@ const Home: NextPage = () => {
             return todo;
           })
         );
-      } else if (todoBeingUpdated.beingUpdated) {
+      } else if (todoBeingUpdated.beingSlashed) {
         setTodos((current) =>
           current.map((todo) => {
             if (todo.id === todoBeingUpdated.id) {
-              return { ...todo, beingUpdated: true };
+              return { ...todo, beingSlashed: true };
             }
             return todo;
           })
@@ -136,12 +191,33 @@ const Home: NextPage = () => {
             return todo;
           })
         );
+      } else if (todoBeingUpdated.beingRevived) {
+        setTodos((current) =>
+          current.map((todo) => {
+            if (todo.id === todoBeingUpdated.id) {
+              return { ...todo, beingRevived: true };
+            }
+            return todo;
+          })
+        );
       }
-    } else if (todos.some((todo: Todo) => todo.beingUpdated || todo.beingDeleted || todo.beingAdded)) {
+    } else if (
+      todos.some(
+        (todo: Todo) =>
+          todo.beingUpdated || todo.beingSlashed || todo.beingDeleted || todo.beingAdded || todo.beingRevived
+      )
+    ) {
       setTodos((current) =>
         current.map((todo) => {
-          if (todo.beingUpdated || todo.beingDeleted) {
-            return { ...todo, beingUpdated: false, beingDeleted: false, beingAdded: false };
+          if (todo.beingUpdated || todo.beingSlashed || todo.beingDeleted || todo.beingAdded || todo.beingRevived) {
+            return {
+              ...todo,
+              beingUpdated: false,
+              beingSlashed: false,
+              beingDeleted: false,
+              beingAdded: false,
+              beingRevived: false,
+            };
           }
           return todo;
         })
@@ -155,10 +231,16 @@ const Home: NextPage = () => {
   };
 
   useEffect(() => {
+    if (selectedTodo) {
+      debounceUpdateTodo(selectedTodoRef?.current);
+    }
+  }, [selectedTodo]);
+
+  useEffect(() => {
     if (router.isReady) {
       const homeMenuOptionsDefault: OptionMenuItem[] = [
         {
-          label: 'Hide completed',
+          label: 'Hide Completed',
           action: (item: OptionMenuItem) => {
             setShowCompleted((current) => !current);
           },
@@ -173,11 +255,20 @@ const Home: NextPage = () => {
           className: '',
           icon: Bars3BottomLeftIcon,
         },
+        {
+          label: 'Show Deleted',
+          action: (item: OptionMenuItem) => {
+            setShowDeleted((current) => !current);
+          },
+          className: '',
+          icon: TrashIcon,
+        },
       ];
       setHomeMenuOptions(homeMenuOptionsDefault);
       getTodos();
     }
   }, [router.isReady]);
+
   return (
     <div className="flex h-screen w-full flex-row items-start justify-center py-2">
       <div
@@ -186,7 +277,7 @@ const Home: NextPage = () => {
           'mt-6': !selectedTodo,
         })}
       >
-        <div className="w-full flex flex-row items-center justify-between">
+        <div className="relative w-full flex flex-row items-center justify-between">
           <h1 className="text-2xl text-th-primary-dark">Home</h1>
           <OptionMenu options={homeMenuOptions} />
         </div>
@@ -208,26 +299,30 @@ const Home: NextPage = () => {
           <TodoDisclosure
             title="Todos"
             todos={todos
-              .filter((todoFromList) => !todoFromList?.deleted)
+              .sort((a, b) => (a.deleted ? 1 : -1))
               .filter((todoFromList) => todoFromList.status === status.TODO)}
             showDescription={showDescription}
+            showDeleted={showDeleted}
             setSelectedTodo={(todo: Todo) => setSelectedTodo(todo)}
+            onRevive={(todo) => reviveTodo(todo)}
             onDelete={(todo?: Todo) => deleteTodo(todo)}
             onChange={(todo: Todo, status: status) => {
-              updateTodo(todo, status);
+              updateTodo({ ...todo, status }, true);
             }}
           />
           {showCompleted && (
             <TodoDisclosure
               title="Completed"
               todos={todos
-                .filter((todoFromList) => !todoFromList?.deleted)
+                .sort((a, b) => (a.deleted ? 1 : -1))
                 .filter((todoFromList) => todoFromList.status === status.COMPLETED)}
               showDescription={showDescription}
+              onRevive={(todo) => reviveTodo(todo)}
+              showDeleted={showDeleted}
               setSelectedTodo={(todo: Todo) => setSelectedTodo(todo)}
               onDelete={(todo?: Todo) => deleteTodo(todo)}
               onChange={(todo: Todo, status: status) => {
-                updateTodo(todo, status);
+                updateTodo({ ...todo, status }, true);
               }}
             />
           )}
@@ -262,19 +357,18 @@ const Home: NextPage = () => {
             maxLength={100}
             className="text-2xl text-ellipsis text-th-primary-dark outline-none focus:border-b-2 focus:border-th-accent-medium pb-1 w-[85%] bg-th-background placeholder:text-th-primary-dark placeholder:opacity-40"
             onChange={(e) => {
-              setTodos((current) =>
-                current.map((item) => {
-                  if (item.id === selectedTodo?.id) {
-                    return { ...item, task: e.target.value };
-                  }
-                  return item;
-                })
+              setTodos((current: Todo[]): Todo[] =>
+                current.map((t) => (t.id === selectedTodo?.id ? selectedTodoRef.current : t))
               );
               setSelectedTodo((current) => ({ ...current, task: e.target.value }));
             }}
-            value={selectedTodo?.task}
+            value={selectedTodo?.task || ''}
           />
           <div className="flex flex-row items-center justify-end gap-2">
+            <button className="rounded-full p-1 flex flex-col justify-center items-center">
+              {autoSaving && <Spinner size="sm" className="text-th-accent-medium" />}
+              {!autoSaving && autoSaved && <CheckIcon className="h-6 w-6 text-th-accent-medium" />}
+            </button>
             <button className="hover:bg-th-background-secondary rounded-full p-1 flex flex-col justify-center items-center">
               <EllipsisHorizontalIcon className="h-5 w-5 text-th-primary-medium" />
             </button>
@@ -290,13 +384,8 @@ const Home: NextPage = () => {
         <div className="w-full flex flex-row items-start justify-start px-4">
           <textarea
             onChange={(e) => {
-              setTodos((current) =>
-                current.map((item) => {
-                  if (item.id === selectedTodo?.id) {
-                    return { ...item, description: e.target.value };
-                  }
-                  return item;
-                })
+              setTodos((current: Todo[]): Todo[] =>
+                current.map((t) => (t.id === selectedTodo?.id ? selectedTodoRef.current : t))
               );
               setSelectedTodo((current) => ({ ...current, description: e.target.value }));
             }}

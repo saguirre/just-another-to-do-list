@@ -14,6 +14,7 @@ export default withApiAuth(async function userHandler(req: NextApiRequest, res: 
     switch (method) {
       case 'GET':
         const todos = await prisma.todos.findUnique({ where: { id: `${todoUuid}` } });
+        await prisma.$disconnect();
         res.status(200).json(todos);
         break;
       case 'PUT':
@@ -22,10 +23,12 @@ export default withApiAuth(async function userHandler(req: NextApiRequest, res: 
           create: { ...req.body },
           update: { ...req.body },
         });
+        await prisma.$disconnect();
         res.status(200).json(updatedTodo);
         break;
       case 'DELETE':
         const deletedTodo = await prisma.todos.update({ where: { id: `${todoUuid}` }, data: { deleted: true } });
+        await prisma.$disconnect();
         res.status(200).json(deletedTodo);
         break;
       default:

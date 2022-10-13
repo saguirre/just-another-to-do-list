@@ -20,12 +20,12 @@ export const OptionMenu: React.FC<OptionMenuProps> = ({ options, itemAttachedToO
             className={classNames(
               'hover:bg-th-background-secondary rounded-full p-1 flex flex-col justify-center items-center transition-all',
               {
-                'opacity-50 line-through': itemAttachedToOptions?.status === status.COMPLETED,
-                'translate-y-[200px] opacity-0 duration-500':
-                  itemAttachedToOptions?.beingUpdated && itemAttachedToOptions?.status === status.TODO,
-                'translate-x-[100px] scale-y-0 opacity-0 duration-700': itemAttachedToOptions?.beingDeleted,
-                'translate-x-0 opacity-100':
-                  !itemAttachedToOptions?.beingUpdated && itemAttachedToOptions?.status === status.TODO,
+                'opacity-50 duration-500': itemAttachedToOptions?.status === status.COMPLETED,
+                'opacity-50 hover:bg-th-background': itemAttachedToOptions?.deleted,
+                'scale-y-0 opacity-0 duration-700':
+                  itemAttachedToOptions?.beingDeleted || itemAttachedToOptions?.beingRevived,
+                'translate-x-0 opacity-100 duration-500':
+                  !itemAttachedToOptions?.beingSlashed && itemAttachedToOptions?.status === status.TODO,
               }
             )}
           >

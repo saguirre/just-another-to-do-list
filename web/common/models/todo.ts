@@ -14,5 +14,7 @@ export interface Todo {
   deleted?: boolean;
   beingAdded?: boolean;
   beingUpdated?: boolean;
+  beingSlashed?: boolean;
+  beingRevived?: boolean;
   beingDeleted?: boolean;
 }

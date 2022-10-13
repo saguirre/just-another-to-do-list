@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient, status } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export default async function userHandler(req: NextApiRequest, res: NextApiResponse) {
@@ -12,6 +12,7 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
     switch (method) {
       case 'GET':
         const todos = await prisma.todos.findMany({ where: { user: { uuid: `${userUuid}` } } });
+        await prisma.$disconnect();
         res.status(200).json(todos);
         break;
       case 'POST':
@@ -24,6 +25,7 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
         const newTodo = await prisma.todos.create({
           data: { ...data, project: { connect: { id: `${projectId}` } }, user: { connect: { uuid: `${userUuid}` } } },
         });
+        await prisma.$disconnect();
         res.status(200).json(newTodo);
         break;
       default:
