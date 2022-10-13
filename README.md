@@ -47,7 +47,7 @@ Besides the obvious challenge of solving an issue that has pestered humanity for
 ## Features
 
 ### Registering a new account
-Users should be able to sign in user a Social sign on. For this project, you will be able to sign in using Google, Github or Twitter. There will be no need to register if you don't wish to save your to-do lists for posterity. You can use the app freely and anonymously!
+Users should be able to sign in using a Social sign on. For this project, you will be able to sign in using Google, Github or Twitter. There will be no need to register if you don't wish to save your to-do lists for posterity. You can use the app freely and anonymously!
 
 ### Logging in
 Logging in will allow you to view your previous to-do lists, manage your subscriptions and it also allows for added features like a pomodoro timer and usage based statistics with awesome looking charts!
