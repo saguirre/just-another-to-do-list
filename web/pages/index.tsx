@@ -88,7 +88,7 @@ const Home: NextPage = () => {
     const updatedTodo = await todoService?.updateTodoById({ ...todo }, todo?.id, user?.id);
     if (!updatedTodo) {
       toast.error('There was an error updating your task');
-      setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === previousTodo?.id ? previousTodo : t)));
+      setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === previousTodo?.id ? previousTodo || {} : t)));
     }
     setTodoBeingUpdated(undefined);
   };
@@ -251,7 +251,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (selectedTodo) {
-      debounceUpdateTodo(selectedTodoRef?.current);
+      debounceUpdateTodo(selectedTodoRef?.current || {});
     }
   }, [selectedTodo]);
 
@@ -350,14 +350,14 @@ const Home: NextPage = () => {
         selectedTask={selectedTodo}
         onInputChange={(value: string) => {
           setTodos((current: Todo[]): Todo[] =>
-            current.map((t) => (t.id === selectedTodo?.id ? selectedTodoRef.current : t))
+            current.map((t) => (t.id === selectedTodo?.id ? selectedTodoRef.current || {} : t))
           );
           setSelectedTodo((current) => ({ ...current, task: value }));
         }}
         onClose={() => setSelectedTodo(undefined)}
         onTextAreaChange={(value: string) => {
           setTodos((current: Todo[]): Todo[] =>
-            current.map((t) => (t.id === selectedTodo?.id ? selectedTodoRef.current : t))
+            current.map((t) => (t.id === selectedTodo?.id ? selectedTodoRef.current || {} : t))
           );
           setSelectedTodo((current) => ({ ...current, description: value }));
         }}

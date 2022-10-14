@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 
-const canvasStyles = {
+const canvasStyles: any = {
   position: 'absolute',
   zIndex: 1000,
   pointerEvents: 'none',
   width: '60%',
   borderRadius: '25%',
-  top: -300
+  top: -300,
 };
 
 interface ConfettiProps {
@@ -15,14 +15,14 @@ interface ConfettiProps {
   defaultFireCount?: number;
 }
 export const Confetti: React.FC<ConfettiProps> = ({ shouldFire, defaultFireCount = 1 }) => {
-  const refAnimationInstance = useRef(null);
+  const refAnimationInstance = useRef<any>(null);
   const [fireCount, setFireCount] = useState(defaultFireCount);
 
-  const getInstance = useCallback((instance) => {
+  const getInstance = useCallback((instance: any) => {
     refAnimationInstance.current = instance;
   }, []);
 
-  const makeShot = useCallback((particleRatio, opts) => {
+  const makeShot = useCallback((particleRatio: number, opts: any) => {
     refAnimationInstance.current &&
       refAnimationInstance.current({
         ...opts,
