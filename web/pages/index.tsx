@@ -1,14 +1,4 @@
-import {
-  Bars3BottomLeftIcon,
-  Bars3Icon,
-  CheckIcon,
-  ChevronRightIcon,
-  EllipsisHorizontalIcon,
-  EyeIcon,
-  EyeSlashIcon,
-  TrashIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
+import { Bars3BottomLeftIcon, Bars3Icon, EyeIcon, EyeSlashIcon, TrashIcon } from '@heroicons/react/24/outline';
 import classNames from 'classnames';
 import type { NextPage } from 'next';
 import { KeyboardEvent, useCallback, useContext, useEffect } from 'react';
@@ -21,7 +11,6 @@ import { useUser } from '@supabase/auth-helpers-react';
 import { status } from '@prisma/client';
 import { TodoContext } from '../common/contexts/todo.context';
 import { ServiceContext } from '../common/contexts/service.context';
-import { Spinner } from '../common/components/Spinner';
 import { debounce } from 'lodash';
 import useState from 'react-usestateref';
 import { TbTrashOff } from 'react-icons/tb';
@@ -41,7 +30,6 @@ const Home: NextPage = () => {
   const [selectedTodo, setSelectedTodo, selectedTodoRef] = useState<Todo>();
   const [newTodoString, setNewTodoString] = useState<string>('');
   const [todoBeingUpdated, setTodoBeingUpdated] = useState<Todo>();
-  const [loadingAdd, setLoadingAdd] = useState<boolean>(false);
   const [autoSaving, setAutosaving] = useState<boolean>(false);
   const [onboardingModalOpen, setOnboardingModalOpen] = useState<boolean>(false);
   const [autoSaved, setAutosaved] = useState<boolean>(true);
@@ -61,20 +49,29 @@ const Home: NextPage = () => {
   );
 
   const addNewTodo = async (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && newTodoString?.length > 0 && !loadingAdd) {
-      setLoadingAdd(true);
+    if (event.key === 'Enter' && newTodoString?.length > 0) {
       const newTodo: Todo = {
+        id: crypto.randomUUID(),
         task: newTodoString,
         createdAt: new Date(),
         status: status.TODO,
       };
+      setTodos((current: Todo[]): Todo[] => [newTodo, ...current]);
+      setNewTodoString('');
       const addedTodo = await todoService?.createTodo(newTodo, user?.id);
       if (addedTodo) {
-        toast.success('Task added!');
-        setTodos((current: Todo[]): Todo[] => [addedTodo, ...current]);
-        setNewTodoString('');
+        setTodos((current: Todo[]): Todo[] =>
+          current.map((todo) => {
+            if (todo.id === newTodo.id) {
+              return addedTodo;
+            }
+            return todo;
+          })
+        );
+      } else {
+        toast.error('There was an error adding your task');
+        setTodos((current: Todo[]): Todo[] => current.filter((todo) => todo.id !== newTodo.id));
       }
-      setLoadingAdd(false);
     } else if (event.key === 'Escape') {
       setNewTodoString('');
     }
@@ -86,11 +83,14 @@ const Home: NextPage = () => {
       todoToUpdate = { ...todo, beingSlashed: true };
     }
     setTodoBeingUpdated(todoToUpdate);
+    const previousTodo = todos.find((todoFromList) => todoFromList.id === todo.id);
+    setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === todo.id ? todo : t)));
     const updatedTodo = await todoService?.updateTodoById({ ...todo }, todo?.id, user?.id);
-    if (updatedTodo) {
-      setTodoBeingUpdated(undefined);
-      setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === updatedTodo.id ? updatedTodo : t)));
+    if (!updatedTodo) {
+      toast.error('There was an error updating your task');
+      setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === previousTodo?.id ? previousTodo : t)));
     }
+    setTodoBeingUpdated(undefined);
   };
 
   const deleteTodo = async (todo?: Todo) => {
@@ -218,11 +218,11 @@ const Home: NextPage = () => {
           if (todo.beingUpdated || todo.beingSlashed || todo.beingDeleted || todo.beingAdded || todo.beingRevived) {
             return {
               ...todo,
-              beingUpdated: false,
-              beingSlashed: false,
-              beingDeleted: false,
-              beingAdded: false,
-              beingRevived: false,
+              beingUpdated: undefined,
+              beingSlashed: undefined,
+              beingDeleted: undefined,
+              beingAdded: undefined,
+              beingRevived: undefined,
             };
           }
           return todo;
@@ -297,7 +297,6 @@ const Home: NextPage = () => {
           onChange={(value: string) => setNewTodoString(value)}
           value={newTodoString}
           disabled={!user}
-          loading={loadingAdd}
         />
         <div className="flex flex-col w-full items-start justify-start">
           <TodoDisclosure

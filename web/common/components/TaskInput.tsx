@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import { Spinner } from './Spinner';
 
 interface TaskInputProps {
   disabled?: boolean;
@@ -7,9 +6,8 @@ interface TaskInputProps {
   value?: string;
   onChange: (value: string) => void;
   onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
-  loading?: boolean;
 }
-export const TaskInput: React.FC<TaskInputProps> = ({ disabled, placeholder, value, onChange, onKeyDown, loading }) => {
+export const TaskInput: React.FC<TaskInputProps> = ({ disabled, placeholder, value, onChange, onKeyDown }) => {
   return (
     <div className="relative w-full flex flex-row items-center justify-between">
       <input
@@ -25,11 +23,6 @@ export const TaskInput: React.FC<TaskInputProps> = ({ disabled, placeholder, val
           }
         )}
       />
-      {loading && (
-        <div className="absolute top-2.5 right-2.5 z-10">
-          <Spinner size="sm" />
-        </div>
-      )}
     </div>
   );
 };

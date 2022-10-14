@@ -5,15 +5,14 @@ interface SpinnerProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-export const Spinner: React.FC<SpinnerProps> = ({ size = 'md', className = '' }) => {
+export const Spinner: React.FC<SpinnerProps> = ({ size = 'md', className }) => {
   return (
     <svg
-      className={classNames('animate-spin', {
+      className={classNames('animate-spin', className, {
         'h-5 w-5': size === 'sm',
         'h-8 w-8': size === 'md',
         'h-12 w-12': size === 'lg',
-        'text-th-primary-medium': !className.includes('text-'),
-        className: true,
+        'text-th-primary-medium': !className?.includes('text-'),
       })}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
