@@ -124,15 +124,14 @@ export const TodoDisclosure: React.FC<TodoDisclosureProps> = ({
                               'opacity-50 duration-500': todo?.status === status.COMPLETED,
                               'opacity-50 hover:bg-th-background': todo?.deleted,
                               'bg-rose-400 scale-y-0 opacity-0 duration-700': todo?.beingDeleted,
-                              'bg-th-accent-medium scale-y-0 opacity-0 duration-700':
-                                todo?.beingRevived,
-                              'translate-x-0 opacity-100 duration-500':
+                              'bg-th-accent-medium scale-y-0 opacity-0 duration-700': todo?.beingRevived,
+                              'translate-x-0 opacity-100 duration-300':
                                 !todo?.beingSlashed && todo?.status === status.TODO,
                             }
                           )}
                         >
                           <div className="flex w-full flex-row items-center justify-start gap-3 transition-all duration-300">
-                            {(todo.beingSlashed) && <Spinner size="sm" className="ml-1" />}
+                            {todo.beingSlashed && <Spinner size="sm" className="ml-1" />}
                             {!todo.beingSlashed && (
                               <>
                                 {todo.status === status.COMPLETED ? (

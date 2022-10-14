@@ -11,7 +11,7 @@ import { TodoContext } from '../common/contexts/todo.context';
 import { Todo } from '../common/models/todo';
 import { ToastContainer, TypeOptions, ToastPosition } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { toastClasses } from './toast-classes';
+import { toastClasses } from '../common/toast-classes';
 
 const JustAnotherToDoList = ({ Component, pageProps }: AppProps) => {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());

@@ -97,13 +97,20 @@ const Home: NextPage = () => {
     if (todo) {
       const todoToDelete = { ...todo, beingDeleted: true };
       setTodoBeingUpdated(todoToDelete);
-      const deletedTodo = await todoService?.deleteTodoById(todo?.id, user?.id);
-      if (deletedTodo) {
+      const previousTodo = todo;
+      todo.deleted = !todo.deleted;
+      setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === todo.id ? todo : t)));
+      if (todo?.id === selectedTodoRef.current?.id) {
+        setSelectedTodo(undefined);
+      }
+      setTimeout(() => {
         setTodoBeingUpdated(undefined);
-        if (deletedTodo?.id === selectedTodoRef.current?.id) {
-          setSelectedTodo(undefined);
-        }
-        setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === deletedTodo.id ? deletedTodo : t)));
+      }, 300);
+
+      const deletedTodo = await todoService?.deleteTodoById(todo?.id, user?.id);
+      if (!deletedTodo) {
+        toast.error('There was an error updating your task');
+        setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === previousTodo.id ? previousTodo : t)));
       }
     }
   };
@@ -112,10 +119,16 @@ const Home: NextPage = () => {
     if (todo) {
       const todoToRevive = { ...todo, beingRevived: true };
       setTodoBeingUpdated(todoToRevive);
-      const revivedTodo = await todoService?.updateTodoById({ ...todo, deleted: false }, todo?.id, user?.id);
-      if (revivedTodo) {
+      const previousTodo = todo;
+      todo.deleted = !todo.deleted;
+      setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === todo.id ? todo : t)));
+      setTimeout(() => {
         setTodoBeingUpdated(undefined);
-        setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === revivedTodo.id ? revivedTodo : t)));
+      }, 300);
+
+      const revivedTodo = await todoService?.updateTodoById({ ...todo, deleted: false }, todo?.id, user?.id);
+      if (!revivedTodo) {
+        setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === previousTodo.id ? previousTodo : t)));
       }
     }
   };
