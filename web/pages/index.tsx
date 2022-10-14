@@ -25,6 +25,7 @@ import { Spinner } from '../common/components/Spinner';
 import { debounce } from 'lodash';
 import useState from 'react-usestateref';
 import { TbTrashOff } from 'react-icons/tb';
+import { OnboardingModal } from '../common/components/OnboardingModal';
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -39,6 +40,7 @@ const Home: NextPage = () => {
   const [todoBeingUpdated, setTodoBeingUpdated] = useState<Todo>();
   const [loadingAdd, setLoadingAdd] = useState<boolean>(false);
   const [autoSaving, setAutosaving] = useState<boolean>(false);
+  const [onboardingModalOpen, setOnboardingModalOpen] = useState<boolean>(false);
   const [autoSaved, setAutosaved] = useState<boolean>(true);
 
   const user = useUser();
@@ -238,6 +240,10 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (router.isReady) {
+      if (!localStorage.getItem('already_onboarded')) {
+        setOnboardingModalOpen(true);
+        localStorage.setItem('already_onboarded', 'true');
+      }
       const homeMenuOptionsDefault: OptionMenuItem[] = [
         {
           label: 'Hide Completed',
@@ -287,7 +293,13 @@ const Home: NextPage = () => {
             onKeyDown={(e) => addNewTodo(e)}
             onChange={(e) => setNewTodoString(e.target.value)}
             value={newTodoString}
-            className="rounded-md text-base w-full px-3 py-2 focus:ring-th-accent-medium focus:ring-1 focus:outline-none placeholder:text-th-primary-dark placeholder:opacity-30 text-th-primary-medium border border-th-accent-medium bg-th-background"
+            disabled={!user}
+            className={classNames(
+              'rounded-md text-base w-full px-3 py-2 focus:ring-th-accent-medium focus:ring-1 focus:outline-none placeholder:text-th-primary-dark placeholder:opacity-30 text-th-primary-medium border border-th-accent-medium bg-th-background',
+              {
+                'opacity-50': !user,
+              }
+            )}
           />
           {loadingAdd && (
             <div className="absolute top-2.5 right-2.5 z-10">
@@ -396,6 +408,7 @@ const Home: NextPage = () => {
           ></textarea>
         </div>
       </div>
+      <OnboardingModal open={onboardingModalOpen} setOpen={setOnboardingModalOpen} />
     </div>
   );
 };

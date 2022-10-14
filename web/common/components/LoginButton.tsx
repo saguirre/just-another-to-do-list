@@ -7,6 +7,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { FaDiscord } from 'react-icons/fa';
 import { useTheme } from 'next-themes';
 import { useSessionContext } from '@supabase/auth-helpers-react';
+import { ArrowUturnRightIcon } from '@heroicons/react/24/outline';
 
 const authProviders: { name: string; provider: Provider; redirectTo: string; icon: any }[] = [
   {
@@ -43,6 +44,12 @@ export const LoginButton = () => {
       <Popover className="relative">
         {({ open }) => (
           <>
+            <div className="absolute -left-4 -bottom-4">
+              <div className="relative flex flex-row items-center justify-start gap-2 w-[200px]">
+                <ArrowUturnRightIcon className="h-4 w-4 text-th-primary-dark rotate-[-40deg]" />
+                <span className="absolute text-sm left-[18px] top-1 text-th-primary-light">Login to get started!</span>
+              </div>
+            </div>
             <Popover.Button
               className={classNames(
                 'group inline-flex items-center rounded-md bg-th-background hover:bg-th-background-secondary px-6 py-2 text-base border border-th-accent-dark font-medium text-th-accent-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75',
