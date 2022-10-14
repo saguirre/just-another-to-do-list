@@ -28,6 +28,7 @@ import { TbTrashOff } from 'react-icons/tb';
 import { OnboardingModal } from '../common/components/OnboardingModal';
 import { TaskInput } from '../common/components/TaskInput';
 import { toast } from 'react-toastify';
+import { EditTask } from '../common/components/EditTask';
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -331,74 +332,24 @@ const Home: NextPage = () => {
           )}
         </div>
       </div>
-      <div
-        className={classNames(
-          'min-h-screen relative transition-all duration-300 h-full mt-12 flex flex-col space-y-3 p-4',
-          {
-            'w-1/2 opacity-100': Object.entries(selectedTodo || {}).length > 0,
-            'w-0 opacity-0': Object.entries(selectedTodo || {}).length === 0,
-          }
-        )}
-      >
-        <div
-          className={classNames('absolute top-[40%] left-0 transition-all duration-300 z-50', {
-            'opacity-100': Object.entries(selectedTodo || {}).length > 0,
-            'opacity-0': Object.entries(selectedTodo || {}).length === 0,
-          })}
-        >
-          <button
-            onClick={() => setSelectedTodo(undefined)}
-            className="flex flex-col items-center justify-center h-16 m-0 rounded-r-2xl pt-0.5 pb-1 pl-0.5 hover:bg-th-background-secondary"
-          >
-            <ChevronRightIcon className="h-6 w-6 text-th-accent-light" />
-          </button>
-        </div>
-        <div className="w-full flex flex-row items-center justify-between pl-4">
-          <input
-            placeholder="Enter a task"
-            minLength={1}
-            maxLength={100}
-            className="text-2xl text-ellipsis text-th-primary-dark outline-none focus:border-b-2 focus:border-th-accent-medium pb-1 w-[85%] bg-th-background placeholder:text-th-primary-dark placeholder:opacity-40"
-            onChange={(e) => {
-              setTodos((current: Todo[]): Todo[] =>
-                current.map((t) => (t.id === selectedTodo?.id ? selectedTodoRef.current : t))
-              );
-              setSelectedTodo((current) => ({ ...current, task: e.target.value }));
-            }}
-            value={selectedTodo?.task || ''}
-          />
-          <div className="flex flex-row items-center justify-end gap-2">
-            <button className="rounded-full p-1 flex flex-col justify-center items-center">
-              {autoSaving && <Spinner size="sm" className="text-th-accent-medium" />}
-              {!autoSaving && autoSaved && <CheckIcon className="h-6 w-6 text-th-accent-medium" />}
-            </button>
-            <button className="hover:bg-th-background-secondary rounded-full p-1 flex flex-col justify-center items-center">
-              <EllipsisHorizontalIcon className="h-5 w-5 text-th-primary-medium" />
-            </button>
-            <button
-              onClick={() => setSelectedTodo(undefined)}
-              className="hover:bg-th-background-secondary rounded-full p-1 flex flex-col justify-center items-center"
-            >
-              <XMarkIcon className="h-5 w-5 text-th-primary-medium" />
-            </button>
-          </div>
-        </div>
-
-        <div className="w-full flex flex-row items-start justify-start px-4">
-          <textarea
-            onChange={(e) => {
-              setTodos((current: Todo[]): Todo[] =>
-                current.map((t) => (t.id === selectedTodo?.id ? selectedTodoRef.current : t))
-              );
-              setSelectedTodo((current) => ({ ...current, description: e.target.value }));
-            }}
-            value={selectedTodo?.description || ''}
-            placeholder="Task description"
-            rows={30}
-            className="bg-th-background p-0 w-full h-[90%] focus:border-transparent focus:ring-0 resize-none border-transparent outline-none text-sm text-th-primary-medium placeholder:text-th-primary-medium placeholder:opacity-40"
-          ></textarea>
-        </div>
-      </div>
+      <EditTask
+        autoSaved={autoSaved}
+        autoSaving={autoSaving}
+        selectedTask={selectedTodo}
+        onInputChange={(value: string) => {
+          setTodos((current: Todo[]): Todo[] =>
+            current.map((t) => (t.id === selectedTodo?.id ? selectedTodoRef.current : t))
+          );
+          setSelectedTodo((current) => ({ ...current, task: value }));
+        }}
+        onClose={() => setSelectedTodo(undefined)}
+        onTextAreaChange={(value: string) => {
+          setTodos((current: Todo[]): Todo[] =>
+            current.map((t) => (t.id === selectedTodo?.id ? selectedTodoRef.current : t))
+          );
+          setSelectedTodo((current) => ({ ...current, description: value }));
+        }}
+      />
       <OnboardingModal open={onboardingModalOpen} setOpen={setOnboardingModalOpen} />
     </div>
   );
