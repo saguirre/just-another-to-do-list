@@ -13,7 +13,7 @@ const authProviders: { name: string; provider: Provider; redirectTo: string; ico
   {
     name: 'Github',
     provider: 'github',
-    redirectTo: process.env.NEXT_PUBLIC_REDIRECT_URL as string,
+    redirectTo: 'http://localhost:3000/',
     icon: AiOutlineGithub,
   },
   {

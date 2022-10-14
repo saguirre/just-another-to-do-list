@@ -26,6 +26,8 @@ import { debounce } from 'lodash';
 import useState from 'react-usestateref';
 import { TbTrashOff } from 'react-icons/tb';
 import { OnboardingModal } from '../common/components/OnboardingModal';
+import { TaskInput } from '../common/components/TaskInput';
+import { toast } from 'react-toastify';
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -58,7 +60,7 @@ const Home: NextPage = () => {
   );
 
   const addNewTodo = async (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && newTodoString?.length > 0 && !loadingAdd) {
       setLoadingAdd(true);
       const newTodo: Todo = {
         task: newTodoString,
@@ -67,6 +69,7 @@ const Home: NextPage = () => {
       };
       const addedTodo = await todoService?.createTodo(newTodo, user?.id);
       if (addedTodo) {
+        toast.success('Task added!');
         setTodos((current: Todo[]): Todo[] => [addedTodo, ...current]);
         setNewTodoString('');
       }
@@ -287,26 +290,14 @@ const Home: NextPage = () => {
           <h1 className="text-2xl text-th-primary-dark">Home</h1>
           <OptionMenu options={homeMenuOptions} />
         </div>
-        <div className="relative w-full flex flex-row items-center justify-between">
-          <input
-            placeholder="New Task..."
-            onKeyDown={(e) => addNewTodo(e)}
-            onChange={(e) => setNewTodoString(e.target.value)}
-            value={newTodoString}
-            disabled={!user}
-            className={classNames(
-              'rounded-md text-base w-full px-3 py-2 focus:ring-th-accent-medium focus:ring-1 focus:outline-none placeholder:text-th-primary-dark placeholder:opacity-30 text-th-primary-medium border border-th-accent-medium bg-th-background',
-              {
-                'opacity-50': !user,
-              }
-            )}
-          />
-          {loadingAdd && (
-            <div className="absolute top-2.5 right-2.5 z-10">
-              <Spinner size="sm" className="text-th-accent-medium" />
-            </div>
-          )}
-        </div>
+        <TaskInput
+          placeholder="Type out your Task and press enter."
+          onKeyDown={(e) => addNewTodo(e)}
+          onChange={(value: string) => setNewTodoString(value)}
+          value={newTodoString}
+          disabled={!user}
+          loading={loadingAdd}
+        />
         <div className="flex flex-col w-full items-start justify-start">
           <TodoDisclosure
             title="Todos"
