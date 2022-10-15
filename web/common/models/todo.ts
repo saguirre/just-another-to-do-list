@@ -1,7 +1,7 @@
-import { status } from "@prisma/client";
+import { status } from '@prisma/client';
 
 export interface Todo {
-  id?: string;
+  id?: number;
   task?: string;
   description?: string;
   createdAt?: Date;
@@ -12,6 +12,7 @@ export interface Todo {
   status?: status;
   projectId?: string;
   deleted?: boolean;
+  position?: number;
   beingAdded?: boolean;
   beingUpdated?: boolean;
   beingSlashed?: boolean;

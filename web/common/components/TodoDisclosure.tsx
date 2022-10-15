@@ -14,15 +14,32 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { OptionMenuItem } from '../models/option-menu-item';
 import { Todo } from '../models/todo';
-import { OptionMenu } from './OptionMenu';
-import { Spinner } from './Spinner';
+import { createPortal } from 'react-dom';
 
+import {
+  closestCenter,
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { SortableTaskListItem } from './SortableTaskListItem';
+import { TaskListItem } from './TaskListItem';
 interface TodoDisclosureProps {
   title: string;
   todos: Todo[];
   showDescription?: boolean;
   showDeleted?: boolean;
-  setSelectedTodo: (todo: Todo) => void;
+  setTodos: (todos: any) => void;
+  setSelectedTodo: (todo?: Todo) => void;
   onChange: (todo: Todo, status: status) => void;
   onDelete: (todo?: Todo) => void;
   onRevive: (todo?: Todo) => void;
@@ -31,6 +48,7 @@ interface TodoDisclosureProps {
 export const TodoDisclosure: React.FC<TodoDisclosureProps> = ({
   title,
   todos,
+  setTodos,
   setSelectedTodo,
   onChange,
   onDelete,
@@ -41,6 +59,13 @@ export const TodoDisclosure: React.FC<TodoDisclosureProps> = ({
   const router = useRouter();
   const [menuOptions, setMenuOptions] = useState<OptionMenuItem[]>([]);
   const [deletedMenuOptions, setDeletedMenuOptions] = useState<OptionMenuItem[]>([]);
+  const [activeId, setActiveId] = useState(null);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   useEffect(() => {
     if (router.isReady) {
@@ -80,124 +105,100 @@ export const TodoDisclosure: React.FC<TodoDisclosureProps> = ({
       setDeletedMenuOptions(deletedMenuOptions);
     }
   }, [router.isReady]);
-  return (
-    <Disclosure defaultOpen>
-      {({ open }) => (
-        <>
-          <Disclosure.Button className="w-full flex flex-row items-center justify-start transition-all duration-300 gap-2 px-2 py-2 hover:bg-th-background-secondary rounded-md ">
-            {open ? (
-              <ChevronDownIcon className="h-3 w-3 text-th-primary-medium" />
-            ) : (
-              <ChevronRightIcon className="h-3 w-3 text-th-primary-medium" />
-            )}
-            <h2 className="text-th-primary-medium">{title}</h2>
-          </Disclosure.Button>
+  const handleDragStart = (event: any) => {
+    const { active } = event;
 
-          <Transition
-            as="div"
-            className={classNames('w-full', {
-              'h-auto': open,
-              'h-0': !open,
-            })}
-            enter="transition-all duration-300 ease-in"
-            enterFrom="transform opacity-0"
-            enterTo="transform scale-y-100 opacity-100"
-            leave="transition duration-150 ease-out"
-            leaveFrom="transform scale-y-100 opacity-100"
-            leaveTo="transform scale-y-0 opacity-0"
-          >
-            <Disclosure.Panel className="flex flex-col w-full items-start justify-start pl-4">
-              {todos.map((todo) => {
-                return (
-                  <div key={todo?.id} className="w-full">
-                    {(showDeleted || !todo?.deleted) && (
-                      <div className="relative w-full">
-                        <div
-                          onClick={() => {
-                            if (!todo?.deleted) {
-                              setSelectedTodo(todo);
-                            }
-                          }}
-                          className={classNames(
-                            'flex flex-row w-full hover:bg-th-background-secondary items-center text-th-primary-medium justify-between px-2 py-2 rounded-md transition-all',
-                            {
-                              'opacity-50 duration-500': todo?.status === status.COMPLETED,
-                              'opacity-50 hover:bg-th-background': todo?.deleted,
-                              'bg-rose-400 scale-y-0 opacity-0 duration-700': todo?.beingDeleted,
-                              'bg-th-accent-medium scale-y-0 opacity-0 duration-700': todo?.beingRevived,
-                              'translate-x-0 opacity-100 duration-300':
-                                !todo?.beingSlashed && todo?.status === status.TODO,
-                            }
-                          )}
-                        >
-                          <div className="flex w-full flex-row items-center justify-start gap-3 transition-all duration-300">
-                            {todo.beingSlashed && <Spinner size="sm" className="ml-1" />}
-                            {!todo.beingSlashed && (
-                              <>
-                                {todo.status === status.COMPLETED ? (
-                                  <button
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      if (!todo?.deleted) {
-                                        onChange(todo, status.TODO);
-                                      }
-                                    }}
-                                    className="flex flex-col justify-center items-center rounded-full p-1 hover:bg-th-background-third hover:ring-1 hover:ring-th-accent-dark"
-                                  >
-                                    <CheckCircleIcon className="h-5 w-5 text-th-primary-medium" />
-                                  </button>
-                                ) : (
-                                  <button
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      if (!todo?.deleted) {
-                                        onChange(todo, status.COMPLETED);
-                                      }
-                                    }}
-                                    className="flex flex-col justify-center items-center rounded-full p-1 hover:bg-th-background-third hover:ring-1 hover:ring-th-accent-dark"
-                                  >
-                                    <StopIcon className="h-5 w-5 text-th-primary-medium" />
-                                  </button>
-                                )}
-                              </>
-                            )}
-                            <div className="flex flex-col items-start justify-start gap-0.5">
-                              <div className="flex flex-row items-center justify-start w-full pr-4 gap-2">
-                                <span
-                                  className={classNames('text-sm text-th-primary-medium hover:cursor-default', {
-                                    'line-through ': todo?.status === status.COMPLETED,
-                                  })}
-                                >
-                                  {todo.task + (todo?.deleted ? ' (Deleted)' : '')}
-                                </span>
-                              </div>
-                              {showDescription && todo?.description && todo?.description?.length > 0 && (
-                                <div className="pl-0.5 flex flex-row items-start justify-start gap-1 w-full">
-                                  <div className="h-0.5 w-1.5 bg-th-accent-medium mt-1.5 rounded-full"></div>
-                                  <span className="text-xs text-th-primary-medium opacity-50 hover:cursor-default">
-                                    {todo.description}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        {todo.deleted ? (
-                          <OptionMenu options={deletedMenuOptions} itemAttachedToOptions={todo} />
-                        ) : (
-                          <OptionMenu options={menuOptions} itemAttachedToOptions={todo} />
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
+    setActiveId(active.id);
+  };
+
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      const moveTodosCallback = (todos: Todo[]) => {
+        const oldIndex = todos.findIndex((todo) => todo.id === active.id);
+        const newIndex = todos.findIndex((todo) => todo.id === over.id);
+
+        return arrayMove(todos, oldIndex, newIndex);
+      };
+      setTodos(moveTodosCallback);
+    }
+
+    setActiveId(null);
+  };
+
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <Disclosure defaultOpen>
+        {({ open }) => (
+          <>
+            <Disclosure.Button className="w-full flex flex-row items-center justify-start transition-all duration-300 gap-2 px-2 py-2 hover:bg-th-background-secondary rounded-md ">
+              {open ? (
+                <ChevronDownIcon className="h-3 w-3 text-th-primary-medium" />
+              ) : (
+                <ChevronRightIcon className="h-3 w-3 text-th-primary-medium" />
+              )}
+              <h2 className="text-th-primary-medium">{title}</h2>
+            </Disclosure.Button>
+
+            <Transition
+              as="div"
+              className={classNames('w-full', {
+                'h-auto': open,
+                'h-0': !open,
               })}
-            </Disclosure.Panel>
-          </Transition>
-        </>
-      )}
-    </Disclosure>
+              enter="transition-all duration-300 ease-in"
+              enterFrom="transform opacity-0"
+              enterTo="transform scale-y-100 opacity-100"
+              leave="transition duration-150 ease-out"
+              leaveFrom="transform scale-y-100 opacity-100"
+              leaveTo="transform scale-y-0 opacity-0"
+            >
+              <Disclosure.Panel className="flex flex-col w-full items-start justify-start pl-4">
+                <SortableContext items={todos.map((todo) => todo.id || '')} strategy={verticalListSortingStrategy}>
+                  {todos.map((todo) => {
+                    return (
+                      <SortableTaskListItem
+                        id={todo.id}
+                        key={todo.id}
+                        onChange={onChange}
+                        showDescription={showDescription}
+                        showDeleted={showDeleted}
+                        menuOptions={menuOptions}
+                        deletedMenuOptions={deletedMenuOptions}
+                        todo={todo}
+                        setSelectedTodo={setSelectedTodo}
+                      />
+                    );
+                  })}
+                </SortableContext>
+                {createPortal(
+                  <DragOverlay>
+                    {activeId ? (
+                      <TaskListItem
+                        onChange={onChange}
+                        showDescription={showDescription}
+                        showDeleted={showDeleted}
+                        menuOptions={menuOptions}
+                        deletedMenuOptions={deletedMenuOptions}
+                        todo={todos.find((todo) => todo.id === activeId) || {}}
+                        setSelectedTodo={setSelectedTodo}
+                        id={activeId}
+                      />
+                    ) : null}
+                  </DragOverlay>,
+                  document.body
+                )}
+              </Disclosure.Panel>
+            </Transition>
+          </>
+        )}
+      </Disclosure>
+    </DndContext>
   );
 };

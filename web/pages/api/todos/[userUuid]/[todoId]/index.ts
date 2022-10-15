@@ -7,19 +7,19 @@ const prisma = new PrismaClient();
 export default withApiAuth(async function userHandler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const {
-      query: { todoUuid },
+      query: { todoId },
       method,
     } = req;
 
     switch (method) {
       case 'GET':
-        const todos = await prisma.todos.findUnique({ where: { id: `${todoUuid}` } });
+        const todos = await prisma.todos.findUnique({ where: { id: Number(todoId) } });
         await prisma.$disconnect();
         res.status(200).json(todos);
         break;
       case 'PUT':
         const updatedTodo = await prisma.todos.upsert({
-          where: { id: `${todoUuid}` },
+          where: { id: Number(todoId) },
           create: { ...req.body },
           update: { ...req.body },
         });
@@ -27,7 +27,7 @@ export default withApiAuth(async function userHandler(req: NextApiRequest, res: 
         res.status(200).json(updatedTodo);
         break;
       case 'DELETE':
-        const deletedTodo = await prisma.todos.update({ where: { id: `${todoUuid}` }, data: { deleted: true } });
+        const deletedTodo = await prisma.todos.update({ where: { id: Number(todoId) }, data: { deleted: true } });
         await prisma.$disconnect();
         res.status(200).json(deletedTodo);
         break;

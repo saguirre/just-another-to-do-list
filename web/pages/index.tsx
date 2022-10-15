@@ -29,7 +29,7 @@ const Home: NextPage = () => {
   const [showCompleted, setShowCompleted] = useState<boolean>(true);
   const [showDescription, setShowDescription] = useState<boolean>(false);
   const [showDeleted, setShowDeleted] = useState<boolean>(false);
-  const [selectedTodo, setSelectedTodo, selectedTodoRef] = useState<Todo>();
+  const [selectedTodo, setSelectedTodo, selectedTodoRef] = useState<Todo | undefined>();
   const [newTodoString, setNewTodoString] = useState<string>('');
   const [todoBeingUpdated, setTodoBeingUpdated] = useState<Todo>();
   const [autoSaving, setAutosaving] = useState<boolean>(false);
@@ -53,18 +53,19 @@ const Home: NextPage = () => {
   const addNewTodo = async (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter' && newTodoString?.length > 0) {
       const newTodo: Todo = {
-        id: crypto.randomUUID(),
         task: newTodoString,
         createdAt: new Date(),
         status: status.TODO,
       };
-      setTodos((current: Todo[]): Todo[] => [newTodo, ...current]);
+
+      const optimisticTodo = { ...newTodo, id: 99999999 * Math.random() };
+      setTodos((current: Todo[]): Todo[] => [optimisticTodo, ...current]);
       setNewTodoString('');
       const addedTodo = await todoService?.createTodo(newTodo, user?.id);
       if (addedTodo) {
         setTodos((current: Todo[]): Todo[] =>
           current.map((todo) => {
-            if (todo.id === newTodo.id) {
+            if (todo.id === optimisticTodo.id) {
               return addedTodo;
             }
             return todo;
@@ -72,7 +73,7 @@ const Home: NextPage = () => {
         );
       } else {
         toast.error('There was an error adding your task');
-        setTodos((current: Todo[]): Todo[] => current.filter((todo) => todo.id !== newTodo.id));
+        setTodos((current: Todo[]): Todo[] => current.filter((todo) => todo.id !== optimisticTodo.id));
       }
     } else if (event.key === 'Escape') {
       setNewTodoString('');
@@ -327,9 +328,10 @@ const Home: NextPage = () => {
               todos={todos
                 .sort((a, b) => (a.deleted ? 1 : -1))
                 .filter((todoFromList) => todoFromList.status === status.TODO)}
+              setTodos={setTodos}
               showDescription={showDescription}
               showDeleted={showDeleted}
-              setSelectedTodo={(todo: Todo) => setSelectedTodo(todo)}
+              setSelectedTodo={(todo?: Todo) => setSelectedTodo(todo)}
               onRevive={(todo) => reviveTodo(todo)}
               onDelete={(todo?: Todo) => deleteTodo(todo)}
               onChange={(todo: Todo, status: status) => {
@@ -342,10 +344,11 @@ const Home: NextPage = () => {
                 todos={todos
                   .sort((a, b) => (a.deleted ? 1 : -1))
                   .filter((todoFromList) => todoFromList.status === status.COMPLETED)}
+                setTodos={setTodos}
                 showDescription={showDescription}
                 onRevive={(todo) => reviveTodo(todo)}
                 showDeleted={showDeleted}
-                setSelectedTodo={(todo: Todo) => setSelectedTodo(todo)}
+                setSelectedTodo={(todo?: Todo) => setSelectedTodo(todo)}
                 onDelete={(todo?: Todo) => deleteTodo(todo)}
                 onChange={(todo: Todo, status: status) => {
                   updateTodo({ ...todo, status }, true);

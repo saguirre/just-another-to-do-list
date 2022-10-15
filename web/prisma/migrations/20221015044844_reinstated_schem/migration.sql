@@ -17,7 +17,7 @@ CREATE TABLE "users" (
 
 -- CreateTable
 CREATE TABLE "projects" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "id" SERIAL NOT NULL,
     "name" VARCHAR(100) NOT NULL,
     "userId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -28,24 +28,25 @@ CREATE TABLE "projects" (
 
 -- CreateTable
 CREATE TABLE "todos" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "id" SERIAL NOT NULL,
     "task" VARCHAR(100) NOT NULL,
     "description" VARCHAR(1000),
-    "projectId" UUID NOT NULL,
+    "position" INTEGER NOT NULL DEFAULT 0,
+    "projectId" INTEGER,
     "userId" TEXT NOT NULL,
     "deleted" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "status" "status" NOT NULL DEFAULT 'TODO',
-    "tagsId" UUID,
-    "todosPriorityId" UUID,
+    "tagsId" INTEGER,
+    "todosPriorityId" INTEGER,
 
     CONSTRAINT "todos_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "todoPriority" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "id" SERIAL NOT NULL,
     "name" VARCHAR(30) NOT NULL,
 
     CONSTRAINT "todoPriority_pkey" PRIMARY KEY ("id")
@@ -53,7 +54,7 @@ CREATE TABLE "todoPriority" (
 
 -- CreateTable
 CREATE TABLE "tags" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
 
     CONSTRAINT "tags_pkey" PRIMARY KEY ("id")
@@ -75,7 +76,7 @@ CREATE UNIQUE INDEX "tags_name_key" ON "tags"("name");
 ALTER TABLE "projects" ADD CONSTRAINT "projects_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("uuid") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "todos" ADD CONSTRAINT "todos_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "todos" ADD CONSTRAINT "todos_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "todos" ADD CONSTRAINT "todos_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("uuid") ON DELETE RESTRICT ON UPDATE CASCADE;

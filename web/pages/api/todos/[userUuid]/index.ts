@@ -23,7 +23,7 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
           projectId = baseProject?.id;
         }
         const newTodo = await prisma.todos.create({
-          data: { ...data, project: { connect: { id: `${projectId}` } }, user: { connect: { uuid: `${userUuid}` } } },
+          data: { ...data, project: { connect: { id: Number(projectId) } }, user: { connect: { uuid: `${userUuid}` } } },
         });
         await prisma.$disconnect();
         res.status(200).json(newTodo);

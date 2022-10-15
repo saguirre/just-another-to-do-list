@@ -31,7 +31,7 @@ model users {
 }
 
 model projects {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id        Int      @id @default(autoincrement())
   name      String   @db.VarChar(100)
   tasks     todos[]
   user      users?   @relation(fields: [userId], references: [uuid])
@@ -41,31 +41,32 @@ model projects {
 }
 
 model todos {
-  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id              Int           @id @default(autoincrement())
   task            String        @db.VarChar(100)
   description     String?       @db.VarChar(1000)
+  position        Int           @default(0)
   project         projects?     @relation(fields: [projectId], references: [id])
-  projectId       String?
+  projectId       Int?
   user            users?        @relation(fields: [userId], references: [uuid])
-  userId          String?
+  userId          String
   deleted         Boolean       @default(false)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @default(now())
   status          status        @default(TODO)
   tags            tags?         @relation(fields: [tagsId], references: [id])
-  tagsId          String?       @db.Uuid
+  tagsId          Int?
   todosPriority   todoPriority? @relation(fields: [todosPriorityId], references: [id])
-  todosPriorityId String?       @db.Uuid
+  todosPriorityId Int?
 }
 
 model todoPriority {
-  id   String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id   Int     @id @default(autoincrement())
   name String  @db.VarChar(30)
   todo todos[]
 }
 
 model tags {
-  id    String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id    Int     @id @default(autoincrement())
   name  String  @unique
   todos todos[]
 }
