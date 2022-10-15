@@ -37,6 +37,7 @@ export const TaskListItem: React.FC<TaskListItemProps> = forwardRef<HTMLDivEleme
     ref
   ) => {
     const { onPointerDown, ...data } = props;
+
     return (
       <div ref={ref} {...data} className={classNames('w-full', className)}>
         {(showDeleted || !todo?.deleted) && (
@@ -61,7 +62,7 @@ export const TaskListItem: React.FC<TaskListItemProps> = forwardRef<HTMLDivEleme
               <div className="flex w-full flex-row items-center justify-start gap-3 transition-all duration-300">
                 <div
                   onPointerDown={onPointerDown}
-                  className="hover:cursor-grab hover:bg-th-background-third active:cursor-grabbing p-1 rounded-md flex flex-col items-center justify-center"
+                  className="hover:cursor-grab touch-none hover:bg-th-background-third active:cursor-grabbing p-3 rounded-md flex flex-col items-center justify-center"
                 >
                   <VscGrabber className="text-th-primary-medium h-4 w-4" />
                 </div>

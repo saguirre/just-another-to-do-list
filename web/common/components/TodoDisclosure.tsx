@@ -14,7 +14,6 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { OptionMenuItem } from '../models/option-menu-item';
 import { Todo } from '../models/todo';
-import { createPortal } from 'react-dom';
 
 import {
   closestCenter,
@@ -177,23 +176,20 @@ export const TodoDisclosure: React.FC<TodoDisclosureProps> = ({
                     );
                   })}
                 </SortableContext>
-                {createPortal(
-                  <DragOverlay>
-                    {activeId ? (
-                      <TaskListItem
-                        onChange={onChange}
-                        showDescription={showDescription}
-                        showDeleted={showDeleted}
-                        menuOptions={menuOptions}
-                        deletedMenuOptions={deletedMenuOptions}
-                        todo={todos.find((todo) => todo.id === activeId) || {}}
-                        setSelectedTodo={setSelectedTodo}
-                        id={activeId}
-                      />
-                    ) : null}
-                  </DragOverlay>,
-                  document.body
-                )}
+                <DragOverlay>
+                  {activeId ? (
+                    <TaskListItem
+                      onChange={onChange}
+                      showDescription={showDescription}
+                      showDeleted={showDeleted}
+                      menuOptions={menuOptions}
+                      deletedMenuOptions={deletedMenuOptions}
+                      todo={todos.find((todo) => todo.id === activeId) || {}}
+                      setSelectedTodo={setSelectedTodo}
+                      id={activeId}
+                    />
+                  ) : null}
+                </DragOverlay>
               </Disclosure.Panel>
             </Transition>
           </>
