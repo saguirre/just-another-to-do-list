@@ -56,6 +56,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ open, setOpen 
             <button
               onClick={() => {
                 setOpenEnvelope(true);
+                localStorage.setItem('already_onboarded', 'true');
               }}
               className={classNames(
                 'relative mx-auto flex items-center pt-1.5 justify-center h-12 w-12 rounded-full bg-th-accent-extra-light focus:outline-none focus:ring-0 transition-all duration-300',

@@ -262,7 +262,6 @@ const Home: NextPage = () => {
     if (router.isReady) {
       if (!localStorage.getItem('already_onboarded')) {
         setOnboardingModalOpen(true);
-        localStorage.setItem('already_onboarded', 'true');
       }
       const homeMenuOptionsDefault: OptionMenuItem[] = [
         {
