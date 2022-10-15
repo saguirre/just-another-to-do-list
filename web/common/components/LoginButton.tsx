@@ -40,7 +40,7 @@ export const LoginButton = () => {
           <div className="absolute -left-4 -bottom-4">
             <div className="relative flex flex-row items-center justify-start gap-2 w-[200px]">
               <ArrowUturnRightIcon className="absolute left-[0px] -top-4 h-4 w-4 text-th-primary-dark rotate-[-40deg]" />
-              <span className="absolute text-sm left-[18px] -top-3 md:top-1 text-th-primary-light">Login to get started!</span>
+              <span className="absolute text-sm left-[18px] -top-3 text-th-primary-light">Login to get started!</span>
             </div>
           </div>
           <Popover.Button
