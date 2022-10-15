@@ -5,12 +5,14 @@ import classNames from 'classnames';
 import {
   ArrowLeftOnRectangleIcon,
   Bars3CenterLeftIcon,
+  Bars3Icon,
   FolderIcon,
   HomeIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { StaticDesktopSidebar } from '../common/components/StaticDesktopSidebar';
 import { ThemePopover } from '../common/components/ThemePopover';
+import { MobileSidebar } from '../common/components/MobileSidebar';
 
 const navigation = [
   { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
@@ -119,15 +121,31 @@ export const AuthedLayout: React.FC<AuthedLayoutProps> = ({ children }) => {
           collapsed={collapsed}
           setCollapsed={(collapsed: boolean) => setCollapsed(collapsed)}
         />
-        <div
-          className={classNames('flex flex-col flex-1 transition-all duration-300', {
-            'pl-72': !collapsed,
-            'pl-28': collapsed,
-          })}
-        >
-          <div className="flex justify-end w-full">
+        {/* Sidebar for mobile */}
+        <MobileSidebar navigation={navigation} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+
+        <div className={classNames("sticky top-0 z-20 flex-shrink-0 flex flex-row items-center md:justify-end md:px-2 justify-between h-16 transition-all duration-300 bg-th-background", {
+          "md:ml-72": !collapsed,
+          "md:ml-28": collapsed,
+        })}>
+          <button
+            type="button"
+            className="ml-2 text-th-primary-medium p-2 flex flex-col items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-th-accent-dark md:hidden"
+            onClick={() => setSidebarOpen(true)}
+          >
+            <span className="sr-only">Open sidebar</span>
+            <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+          </button>
+          <div className="flex flex-row items-center justify-end gap-2 px-2">
             <ThemePopover />
           </div>
+        </div>
+        <div
+          className={classNames('flex flex-col flex-1 transition-all duration-300', {
+            'md:pl-72': !collapsed,
+            'md:pl-28': collapsed,
+          })}
+        >
           <main>{children}</main>
         </div>
       </div>

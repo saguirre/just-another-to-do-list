@@ -14,6 +14,7 @@ interface ConfettiProps {
   shouldFire: boolean;
   defaultFireCount?: number;
 }
+
 export const Confetti: React.FC<ConfettiProps> = ({ shouldFire, defaultFireCount = 1 }) => {
   const refAnimationInstance = useRef<any>(null);
   const [fireCount, setFireCount] = useState(defaultFireCount);

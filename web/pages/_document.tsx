@@ -2,7 +2,7 @@ import { Html, Head, Main, NextScript } from 'next/document';
 
 const Document: React.FC = () => {
   return (
-    <Html className="h-full bg-th-background">
+    <Html className="h-full bg-th-background overflow-hidden">
       <Head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

@@ -164,17 +164,14 @@ export const TodoDisclosure: React.FC<TodoDisclosureProps> = ({
                               </>
                             )}
                             <div className="flex flex-col items-start justify-start gap-0.5">
-                              <div className="flex flex-row items-center justify-start gap-2">
+                              <div className="flex flex-row items-center justify-start w-full pr-4 gap-2">
                                 <span
                                   className={classNames('text-sm text-th-primary-medium hover:cursor-default', {
                                     'line-through ': todo?.status === status.COMPLETED,
                                   })}
                                 >
-                                  {todo.task}
+                                  {todo.task + (todo?.deleted ? ' (Deleted)' : '')}
                                 </span>
-                                {todo?.deleted && (
-                                  <span className="text-sm text-th-primary-medium hover:cursor-default">(Deleted)</span>
-                                )}
                               </div>
                               {showDescription && todo?.description && todo?.description?.length > 0 && (
                                 <div className="pl-0.5 flex flex-row items-start justify-start gap-1 w-full">

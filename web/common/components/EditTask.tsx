@@ -1,4 +1,10 @@
-import { ChevronRightIcon, CheckIcon, EllipsisHorizontalIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import {
+  ChevronRightIcon,
+  CheckIcon,
+  EllipsisHorizontalIcon,
+  XMarkIcon,
+  ChevronDownIcon,
+} from '@heroicons/react/24/outline';
 import classNames from 'classnames';
 import { Todo } from '../models/todo';
 import { Spinner } from './Spinner';
@@ -23,15 +29,15 @@ export const EditTask: React.FC<EditTaskProps> = ({
   return (
     <div
       className={classNames(
-        'min-h-screen relative transition-all duration-300 h-full mt-12 flex flex-col space-y-3 p-4',
+        'min-h-screen overflow-y-hidden absolute w-screen z-50 md:z-0 bg-th-background left-0 top-80 md:mt-0 md:top-0 border-t md:border-l border-b border-th-accent-medium shadow-2xl shadow-th-primary-dark rounded-t-lg md:rounded-tr-none md:rounded-l-lg md:shadow-none md:relative transition-all duration-300 md:h-full mt-12 md:flex md:flex-col md:space-y-3 md:p-4',
         {
-          'w-1/2 opacity-100': Object.entries(selectedTask || {}).length > 0,
-          'w-0 opacity-0': Object.entries(selectedTask || {}).length === 0,
+          'md:w-1/2 opacity-100': Object.entries(selectedTask || {}).length > 0,
+          'hidden md:w-0 opacity-0': Object.entries(selectedTask || {}).length === 0,
         }
       )}
     >
       <div
-        className={classNames('absolute top-[40%] left-0 transition-all duration-300 z-50', {
+        className={classNames('hidden md:flex absolute top-[40%] left-0 transition-all duration-300 z-50', {
           'opacity-100': Object.entries(selectedTask || {}).length > 0,
           'opacity-0': Object.entries(selectedTask || {}).length === 0,
         })}
@@ -43,7 +49,23 @@ export const EditTask: React.FC<EditTaskProps> = ({
           <ChevronRightIcon className="h-6 w-6 text-th-accent-light" />
         </button>
       </div>
-      <div className="w-full flex flex-row items-center justify-between pl-4">
+      <div
+        className={classNames(
+          'md:hidden transition-all flex flex-col items-center justify-center w-full duration-300 z-50',
+          {
+            'opacity-100': Object.entries(selectedTask || {}).length > 0,
+            'opacity-0': Object.entries(selectedTask || {}).length === 0,
+          }
+        )}
+      >
+        <button
+          onClick={() => onClose()}
+          className="flex flex-col items-center justify-center mb-3 mt-1 rounded-r-2xl pt-0.5 pb-1 pl-0.5 hover:bg-th-background-secondary"
+        >
+          <ChevronDownIcon className="h-6 w-6 text-th-accent-light" />
+        </button>
+      </div>
+      <div className="w-full flex flex-row items-center justify-between pl-4 mb-6">
         <input
           placeholder="Enter a task"
           minLength={1}
@@ -53,16 +75,16 @@ export const EditTask: React.FC<EditTaskProps> = ({
           value={selectedTask?.task || ''}
         />
         <div className="flex flex-row items-center justify-end gap-2">
-          <button className="rounded-full p-1 flex flex-col justify-center items-center">
+          <button className="rounded-full pr-4 pl-1 py-1 flex flex-col justify-center items-center">
             {autoSaving && <Spinner size="sm" />}
             {!autoSaving && autoSaved && <CheckIcon className="h-6 w-6 text-th-accent-medium" />}
           </button>
-          <button className="hover:bg-th-background-secondary rounded-full p-1 flex flex-col justify-center items-center">
+          <button className="hidden hover:bg-th-background-secondary rounded-full p-1 flex-col justify-center items-center">
             <EllipsisHorizontalIcon className="h-5 w-5 text-th-primary-medium" />
           </button>
           <button
             onClick={() => onClose()}
-            className="hover:bg-th-background-secondary rounded-full p-1 flex flex-col justify-center items-center"
+            className="hidden md:flex hover:bg-th-background-secondary rounded-full p-1 flex-col justify-center items-center"
           >
             <XMarkIcon className="h-5 w-5 text-th-primary-medium" />
           </button>

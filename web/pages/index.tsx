@@ -18,9 +18,11 @@ import { OnboardingModal } from '../common/components/OnboardingModal';
 import { TaskInput } from '../common/components/TaskInput';
 import { toast } from 'react-toastify';
 import { EditTask } from '../common/components/EditTask';
+import { LoadingWrapper } from '../common/components/LoadingWrapper';
 
 const Home: NextPage = () => {
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
   const [homeMenuOptions, setHomeMenuOptions] = useState<OptionMenuItem[]>([]);
   const { todos, setTodos } = useContext(TodoContext);
   const { todoService } = useContext(ServiceContext);
@@ -247,6 +249,7 @@ const Home: NextPage = () => {
   const getTodos = async () => {
     const todos = await todoService?.getTodos(user?.id);
     setTodos(todos || []);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -293,77 +296,82 @@ const Home: NextPage = () => {
   }, [router.isReady]);
 
   return (
-    <div className="flex h-screen w-full flex-row items-start justify-center py-2">
-      <div
-        className={classNames('w-1/2 min-h-screen h-full flex flex-col space-y-3 p-4 transition-all duration-300', {
-          'border-r border-th-accent-medium mt-0': selectedTodo,
-          'mt-6': !selectedTodo,
-        })}
-      >
-        <div className="relative w-full flex flex-row items-center justify-between">
-          <h1 className="text-2xl text-th-primary-dark">Home</h1>
-          <OptionMenu options={homeMenuOptions} />
-        </div>
-        <TaskInput
-          placeholder="Type out your Task and press enter."
-          onKeyDown={(e) => addNewTodo(e)}
-          onChange={(value: string) => setNewTodoString(value)}
-          value={newTodoString}
-          disabled={!user}
-        />
-        <div className="flex flex-col w-full items-start justify-start">
-          <TodoDisclosure
-            title="Todos"
-            todos={todos
-              .sort((a, b) => (a.deleted ? 1 : -1))
-              .filter((todoFromList) => todoFromList.status === status.TODO)}
-            showDescription={showDescription}
-            showDeleted={showDeleted}
-            setSelectedTodo={(todo: Todo) => setSelectedTodo(todo)}
-            onRevive={(todo) => reviveTodo(todo)}
-            onDelete={(todo?: Todo) => deleteTodo(todo)}
-            onChange={(todo: Todo, status: status) => {
-              updateTodo({ ...todo, status }, true);
-            }}
+    <LoadingWrapper loading={loading}>
+      <div className="flex h-screen w-full flex-col md:flex-row items-center justify-center py-2">
+        <div
+          className={classNames(
+            'w-screen md:w-1/2 overflow-y-scroll min-h-screen h-full flex flex-col space-y-3 p-4 transition-all duration-300',
+            {
+              'mt-0': selectedTodo,
+              'mt-6': !selectedTodo,
+            }
+          )}
+        >
+          <div className="relative w-full flex flex-row items-center justify-between">
+            <h1 className="text-2xl text-th-primary-dark">Home</h1>
+            <OptionMenu options={homeMenuOptions} />
+          </div>
+          <TaskInput
+            placeholder="Type out your Task and press enter."
+            onKeyDown={(e) => addNewTodo(e)}
+            onChange={(value: string) => setNewTodoString(value)}
+            value={newTodoString}
+            disabled={!user}
           />
-          {showCompleted && (
+          <div className="flex flex-col w-full items-start justify-start">
             <TodoDisclosure
-              title="Completed"
+              title="Todos"
               todos={todos
                 .sort((a, b) => (a.deleted ? 1 : -1))
-                .filter((todoFromList) => todoFromList.status === status.COMPLETED)}
+                .filter((todoFromList) => todoFromList.status === status.TODO)}
               showDescription={showDescription}
-              onRevive={(todo) => reviveTodo(todo)}
               showDeleted={showDeleted}
               setSelectedTodo={(todo: Todo) => setSelectedTodo(todo)}
+              onRevive={(todo) => reviveTodo(todo)}
               onDelete={(todo?: Todo) => deleteTodo(todo)}
               onChange={(todo: Todo, status: status) => {
                 updateTodo({ ...todo, status }, true);
               }}
             />
-          )}
+            {showCompleted && (
+              <TodoDisclosure
+                title="Completed"
+                todos={todos
+                  .sort((a, b) => (a.deleted ? 1 : -1))
+                  .filter((todoFromList) => todoFromList.status === status.COMPLETED)}
+                showDescription={showDescription}
+                onRevive={(todo) => reviveTodo(todo)}
+                showDeleted={showDeleted}
+                setSelectedTodo={(todo: Todo) => setSelectedTodo(todo)}
+                onDelete={(todo?: Todo) => deleteTodo(todo)}
+                onChange={(todo: Todo, status: status) => {
+                  updateTodo({ ...todo, status }, true);
+                }}
+              />
+            )}
+          </div>
         </div>
+        <EditTask
+          autoSaved={autoSaved}
+          autoSaving={autoSaving}
+          selectedTask={selectedTodo}
+          onInputChange={(value: string) => {
+            setTodos((current: Todo[]): Todo[] =>
+              current.map((t) => (t.id === selectedTodo?.id ? selectedTodoRef.current || {} : t))
+            );
+            setSelectedTodo((current) => ({ ...current, task: value }));
+          }}
+          onClose={() => setSelectedTodo(undefined)}
+          onTextAreaChange={(value: string) => {
+            setTodos((current: Todo[]): Todo[] =>
+              current.map((t) => (t.id === selectedTodo?.id ? selectedTodoRef.current || {} : t))
+            );
+            setSelectedTodo((current) => ({ ...current, description: value }));
+          }}
+        />
+        <OnboardingModal open={onboardingModalOpen} setOpen={setOnboardingModalOpen} />
       </div>
-      <EditTask
-        autoSaved={autoSaved}
-        autoSaving={autoSaving}
-        selectedTask={selectedTodo}
-        onInputChange={(value: string) => {
-          setTodos((current: Todo[]): Todo[] =>
-            current.map((t) => (t.id === selectedTodo?.id ? selectedTodoRef.current || {} : t))
-          );
-          setSelectedTodo((current) => ({ ...current, task: value }));
-        }}
-        onClose={() => setSelectedTodo(undefined)}
-        onTextAreaChange={(value: string) => {
-          setTodos((current: Todo[]): Todo[] =>
-            current.map((t) => (t.id === selectedTodo?.id ? selectedTodoRef.current || {} : t))
-          );
-          setSelectedTodo((current) => ({ ...current, description: value }));
-        }}
-      />
-      <OnboardingModal open={onboardingModalOpen} setOpen={setOnboardingModalOpen} />
-    </div>
+    </LoadingWrapper>
   );
 };
 
