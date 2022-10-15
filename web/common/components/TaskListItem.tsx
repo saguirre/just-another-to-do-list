@@ -19,15 +19,26 @@ interface TaskListItemProps extends Partial<DraggableAttributes> {
   setSelectedTodo: (todo?: Todo) => void;
   menuOptions: OptionMenuItem[];
   deletedMenuOptions: OptionMenuItem[];
+  className?: string;
 }
 export const TaskListItem: React.FC<TaskListItemProps> = forwardRef<HTMLDivElement, TaskListItemProps>(
   (
-    { showDeleted, todo, onChange, setSelectedTodo, showDescription, deletedMenuOptions, menuOptions, ...props },
+    {
+      showDeleted,
+      todo,
+      onChange,
+      setSelectedTodo,
+      showDescription,
+      deletedMenuOptions,
+      menuOptions,
+      className,
+      ...props
+    },
     ref
   ) => {
     const { onPointerDown, ...data } = props;
     return (
-      <div ref={ref} {...data} className="w-full">
+      <div ref={ref} {...data} className={classNames('w-full', className)}>
         {(showDeleted || !todo?.deleted) && (
           <div className="relative w-full">
             <div

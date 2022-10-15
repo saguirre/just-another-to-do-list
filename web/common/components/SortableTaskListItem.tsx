@@ -3,7 +3,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { TaskListItem } from './TaskListItem';
 
 export const SortableTaskListItem = (props: any) => {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: props.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: props.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -11,7 +11,14 @@ export const SortableTaskListItem = (props: any) => {
   };
 
   return (
-    <TaskListItem ref={setNodeRef} {...props} style={style} {...attributes} {...listeners}>
+    <TaskListItem
+      ref={setNodeRef}
+      {...props}
+      className={isDragging ? 'opacity-0' : ''}
+      style={style}
+      {...attributes}
+      {...listeners}
+    >
       {props.id}
     </TaskListItem>
   );
