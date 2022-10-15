@@ -10,7 +10,7 @@ interface StepperProps {
 export const Stepper: React.FC<StepperProps> = ({ currentStep, setCurrentStep, steps, onFinish }) => {
   return (
     <nav className="flex flex-row items-center justify-between w-full" aria-label="Progress">
-      <ol role="list" className="ml-8 flex items-center space-x-5">
+      <ol role="list" className="ml-2 md:ml-8 flex items-center space-x-5">
         {steps.map((step, index) => (
           <li key={step.name}>
             {currentStep > index ? (

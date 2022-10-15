@@ -1,21 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 
-const canvasStyles: any = {
-  position: 'absolute',
-  zIndex: 1000,
-  pointerEvents: 'none',
-  width: '60%',
-  borderRadius: '25%',
-  top: -300,
-};
-
 interface ConfettiProps {
   shouldFire: boolean;
   defaultFireCount?: number;
+  canvasStyles: any;
 }
 
-export const Confetti: React.FC<ConfettiProps> = ({ shouldFire, defaultFireCount = 1 }) => {
+export const Confetti: React.FC<ConfettiProps> = ({ canvasStyles, shouldFire, defaultFireCount = 1 }) => {
   const refAnimationInstance = useRef<any>(null);
   const [fireCount, setFireCount] = useState(defaultFireCount);
 

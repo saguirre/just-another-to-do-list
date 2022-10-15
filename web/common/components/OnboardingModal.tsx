@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { EnvelopeIcon, EnvelopeOpenIcon } from '@heroicons/react/24/outline';
 import classNames from 'classnames';
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { Confetti } from './Confetti';
 import { ModalWrapper } from './ModalWrapper';
 import { OnboardingTutorial } from './OnboardingTutorial';
@@ -13,11 +13,36 @@ interface OnboardingModalProps {
 
 export const OnboardingModal: React.FC<OnboardingModalProps> = ({ open, setOpen }) => {
   const [openEnvelope, setOpenEnvelope] = useState(false);
+  const [canvasStyles, setCanvasStyles] = useState({});
   const [agreedToTutorial, setAgreedToTutorial] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    setCanvasStyles(
+      window.innerWidth < 640
+        ? {
+            position: 'absolute',
+            zIndex: 1000,
+            pointerEvents: 'none',
+            width: '100%',
+            height: 500,
+            bottom: 0,
+            borderRadius: '75%',
+          }
+        : {
+            position: 'absolute',
+            zIndex: 1000,
+            pointerEvents: 'none',
+            width: '60%',
+            borderRadius: '25%',
+            top: -300,
+          }
+    );
+  }, []);
 
   return (
     <ModalWrapper open={open} setOpen={() => {}}>
       <Dialog.Panel
+        ref={modalRef}
         className={classNames(
           'relative w-fit h-full bg-th-background overflow-y-show rounded-lg px-4 pt-5 pb-4 text-left shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full sm:p-6',
           {
@@ -58,7 +83,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ open, setOpen 
               >
                 <EnvelopeOpenIcon className="h-8 w-8 text-th-accent-dark " aria-hidden="true" />
                 <div className="relative flex flex-col items-center justify-center w-screen h-full">
-                  <Confetti shouldFire={openEnvelope} />
+                  <Confetti canvasStyles={canvasStyles} shouldFire={openEnvelope} />
                 </div>
               </Transition>
             </button>
