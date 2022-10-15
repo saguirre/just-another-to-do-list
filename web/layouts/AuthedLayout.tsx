@@ -141,7 +141,7 @@ export const AuthedLayout: React.FC<AuthedLayoutProps> = ({ children }) => {
           </div>
         </div>
         <div
-          className={classNames('flex flex-col flex-1 transition-all duration-300', {
+          className={classNames('flex flex-col flex-1 transition-all duration-300 pb-8', {
             'md:pl-72': !collapsed,
             'md:pl-28': collapsed,
           })}
