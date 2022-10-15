@@ -38,7 +38,15 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
         />
         {/* Sidebar for mobile */}
         <MobileSidebar navigation={navigation} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <div className="sticky top-0 z-10 flex-shrink-0 flex flex-row items-center justify-between h-16 bg-th-background">
+        <div
+          className={classNames(
+            'sticky top-0 z-20 flex-shrink-0 flex flex-row items-center md:justify-end md:px-2 justify-between h-16 transition-all duration-300 bg-th-background',
+            {
+              'md:ml-72': !collapsed,
+              'md:ml-20': collapsed,
+            }
+          )}
+        >
           <button
             type="button"
             className="ml-2 text-th-primary-medium p-2 flex flex-col items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-th-accent-dark md:hidden"

@@ -297,7 +297,11 @@ const Home: NextPage = () => {
 
   return (
     <LoadingWrapper loading={loading}>
-      <div className="flex h-screen w-full flex-col md:flex-row items-center justify-center py-2">
+      <div
+        className={classNames('flex h-screen w-full flex-col md:flex-row items-center justify-center py-2', {
+          'md:w-screen': !user,
+        })}
+      >
         <div
           className={classNames(
             'w-screen md:w-1/2 overflow-y-scroll min-h-screen h-full flex flex-col space-y-3 p-4 transition-all duration-300',
