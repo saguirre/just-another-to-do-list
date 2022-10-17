@@ -4,11 +4,11 @@ import classNames from 'classnames';
 const priorityClass = (priority?: todoPriority) => {
   switch (priority?.name) {
     case 'Low':
-      return 'font-bold text-sm rounded-md py-1 px-2 bg-green-300/30 text-green-400';
+      return 'font-bold text-sm rounded-md py-1 px-2 bg-green-400/30 text-green-500';
     case 'Medium':
-      return 'font-bold text-sm rounded-md py-1 px-2 bg-yellow-300/30 text-yellow-400';
+      return 'font-bold text-sm rounded-md py-1 px-2 bg-yellow-400/30 text-yellow-500';
     case 'High':
-      return 'font-bold text-sm rounded-md py-1 px-2 bg-red-300/30 text-red-400';
+      return 'font-bold text-sm rounded-md py-1 px-2 bg-red-400/30 text-red-500';
     default:
       return 'hidden';
   }

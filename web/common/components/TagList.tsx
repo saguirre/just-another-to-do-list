@@ -23,7 +23,7 @@ export const TagList: React.FC<TagListProps> = ({ tags, setTags, className, hove
             key={tag.id}
             className={classNames(
               hoverable ? 'hover:cursor-pointer hover:bg-rose-500' : '',
-              'inline-block w-fit flex-wrap bg-th-accent-dark rounded-full px-2.5 py-1 font-semibold text-sm text-th-primary-medium'
+              'inline-block w-fit flex-wrap bg-th-accent-dark rounded-full px-2.5 py-1 font-semibold text-sm text-th-primary-extra-light'
             )}
           >
             {tag.name}
