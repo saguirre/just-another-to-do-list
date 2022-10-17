@@ -17,6 +17,7 @@ export const TagList: React.FC<TagListProps> = ({ tags, setTags, className }) =>
       {tags.map((tag: Tag) => {
         return (
           <span
+            //@ts-ignore
             onClick={() => setTags((current: Tag[]): Tag[] => current.filter((t) => t.id !== tag?.id))}
             key={tag.id}
             className="hover:cursor-pointer hover:bg-rose-500 inline-block w-fit flex-wrap bg-th-accent-dark rounded-full px-2.5 py-0.5 font-semibold text-xs text-th-primary-medium"

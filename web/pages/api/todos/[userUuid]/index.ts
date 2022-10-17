@@ -53,6 +53,7 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
             })),
           });
         }
+        //@ts-ignore
         newTodo = await prisma.todos.findUnique({
           where: { id: newTodo.id },
           include: { todoTags: { select: { tag: true } } },
