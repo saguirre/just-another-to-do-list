@@ -1,4 +1,4 @@
-import { status } from '@prisma/client';
+import { status, todoPriority } from '@prisma/client';
 import { Tag } from './tag';
 
 export interface Todo {
@@ -9,8 +9,8 @@ export interface Todo {
   userId?: string;
   updatedAt?: Date;
   tagsId?: string;
-  todosPriorityId?: string;
   status?: status;
+  todosPriority?: todoPriority;
   projectId?: number;
   deleted?: boolean;
   position?: number;

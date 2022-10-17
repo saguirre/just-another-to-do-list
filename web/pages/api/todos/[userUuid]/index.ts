@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, todoPriority } from '@prisma/client';
 import { Todo } from '../../../../common/models/todo';
 import { Tag } from '../../../../common/models/tag';
 const prisma = new PrismaClient();
@@ -15,14 +15,14 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
       case 'GET':
         const todos = await prisma.todos.findMany({
           where: { user: { uuid: `${userUuid}` } },
-          include: { todoTags: { select: { tag: true } } },
+          include: { todoTags: { select: { tag: true } }, todosPriority: true },
         });
         await prisma.$disconnect();
         res.status(200).json(todos);
         break;
       case 'POST':
-        const body: { todo: any; tags?: Tag[] } = req.body;
-        const { todo, tags } = body;
+        const body: { todo: any; tags?: Tag[]; priority?: todoPriority } = req.body;
+        const { todo, tags, priority } = body;
         let { projectId, ...data } = todo;
         if (!projectId) {
           const baseProject = await prisma.projects.findFirst({ where: { name: 'base_project' } });
@@ -33,6 +33,7 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
             ...data,
             project: { connect: { id: Number(projectId) } },
             user: { connect: { uuid: `${userUuid}` } },
+            todosPriority: { connect: { id: Number(priority?.id || 4) } },
           },
         });
         if (tags && tags.length > 0) {
@@ -53,10 +54,11 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
             })),
           });
         }
+
         //@ts-ignore
         newTodo = await prisma.todos.findUnique({
           where: { id: newTodo.id },
-          include: { todoTags: { select: { tag: true } } },
+          include: { todoTags: { select: { tag: true } }, todosPriority: true },
         });
         await prisma.$disconnect();
         res.status(200).json(newTodo);

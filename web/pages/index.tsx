@@ -8,7 +8,7 @@ import { OptionMenuItem } from '../common/models/option-menu-item';
 import { Todo } from '../common/models/todo';
 import { useRouter } from 'next/router';
 import { useUser } from '@supabase/auth-helpers-react';
-import { status } from '@prisma/client';
+import { status, todoPriority } from '@prisma/client';
 import { TodoContext } from '../common/contexts/todo.context';
 import { ServiceContext } from '../common/contexts/service.context';
 import { debounce } from 'lodash';
@@ -38,11 +38,12 @@ const Home: NextPage = () => {
   const [autoSaved, setAutosaved] = useState<boolean>(true);
   const [tags, setTags] = useState<Tag[]>([]);
   const [suggestions, setSuggestions] = useState<Tag[]>([]);
+  const [selectedPriority, setSelectedPriority] = useState<todoPriority>({ id: 4, name: 'None' });
   const user = useUser();
   const debounceUpdateTodo = useCallback(
     debounce(async (todo: Todo) => {
       setAutosaving(true);
-      const { todoTags, id, ...todoToSend} = todo;
+      const { todoTags, id, todosPriority, ...todoToSend } = todo;
       const updatedTodo = await todoService?.updateTodoById({ ...todoToSend }, todo?.id, user?.id);
       if (updatedTodo) {
         setAutosaving(false);
@@ -66,7 +67,8 @@ const Home: NextPage = () => {
       setNewTodoString('');
       const tagsToSend = tags;
       setTags([]);
-      const addedTodo = await todoService?.createTodo(newTodo, user?.id, tagsToSend);
+      setSelectedPriority({ id: 4, name: 'None' });
+      const addedTodo = await todoService?.createTodo(newTodo, user?.id, tagsToSend, selectedPriority);
 
       if (addedTodo) {
         setTodos((current: Todo[]): Todo[] =>
@@ -94,7 +96,7 @@ const Home: NextPage = () => {
     setTodoBeingUpdated(todoToUpdate);
     const previousTodo = todos.find((todoFromList) => todoFromList.id === todo.id);
     setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === todo.id ? todo : t)));
-    const { todoTags, ...todoToSend} = todo;
+    const { todoTags, ...todoToSend } = todo;
     const updatedTodo = await todoService?.updateTodoById(todoToSend, todo?.id, user?.id);
     if (!updatedTodo) {
       toast.error('There was an error updating your task');
@@ -323,8 +325,10 @@ const Home: NextPage = () => {
             <OptionMenu options={homeMenuOptions} />
           </div>
           <TaskInput
-            placeholder="Type out your Task and press enter."
+            placeholder="Type a task. You can add tags with # and priorities with !"
             tags={tags}
+            setSelectedPriority={setSelectedPriority}
+            selectedPriority={selectedPriority}
             setTags={setTags}
             suggestions={suggestions}
             onKeyDown={(e) => addNewTodo(e)}

@@ -5,8 +5,9 @@ interface TagListProps {
   tags: Tag[];
   setTags: (tags: Tag[]) => void;
   className?: string;
+  hoverable?: boolean;
 }
-export const TagList: React.FC<TagListProps> = ({ tags, setTags, className }) => {
+export const TagList: React.FC<TagListProps> = ({ tags, setTags, className, hoverable = true }) => {
   return (
     <div
       className={classNames(
@@ -20,7 +21,10 @@ export const TagList: React.FC<TagListProps> = ({ tags, setTags, className }) =>
             //@ts-ignore
             onClick={() => setTags((current: Tag[]): Tag[] => current.filter((t) => t.id !== tag?.id))}
             key={tag.id}
-            className="hover:cursor-pointer hover:bg-rose-500 inline-block w-fit flex-wrap bg-th-accent-dark rounded-full px-2.5 py-0.5 font-semibold text-xs text-th-primary-medium"
+            className={classNames(
+              hoverable ? 'hover:cursor-pointer hover:bg-rose-500' : '',
+              'inline-block w-fit flex-wrap bg-th-accent-dark rounded-full px-2.5 py-1 font-semibold text-sm text-th-primary-medium'
+            )}
           >
             {tag.name}
           </span>

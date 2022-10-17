@@ -15,7 +15,7 @@ export default withApiAuth(async function userHandler(req: NextApiRequest, res: 
       case 'GET':
         const todos = await prisma.todos.findUnique({
           where: { id: Number(todoId) },
-          include: { todoTags: { select: { tag: true } } },
+          include: { todoTags: { select: { tag: true } }, todosPriority: true },
         });
         await prisma.$disconnect();
         res.status(200).json(todos);

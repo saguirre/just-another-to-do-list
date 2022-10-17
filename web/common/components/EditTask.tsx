@@ -7,6 +7,7 @@ import {
 } from '@heroicons/react/24/outline';
 import classNames from 'classnames';
 import { Todo } from '../models/todo';
+import { PrioritySpan } from './PrioritySpan';
 import { Spinner } from './Spinner';
 import { TagList } from './TagList';
 
@@ -66,7 +67,19 @@ export const EditTask: React.FC<EditTaskProps> = ({
           <ChevronDownIcon className="h-6 w-6 text-th-accent-light" />
         </button>
       </div>
-      <TagList tags={selectedTask?.todoTags?.map(({ tag }) => tag) || []} setTags={() => {}} />
+      <div className="pl-3 flex flex-row gap-2 items-center justify-start">
+        {selectedTask?.todosPriority && (
+          <div className="w-fit">
+            <PrioritySpan
+              hoverable={false}
+              selectedPriority={selectedTask?.todosPriority}
+              setSelectedPriority={() => {}}
+            />
+          </div>
+        )}
+        <TagList hoverable={false} tags={selectedTask?.todoTags?.map(({ tag }) => tag) || []} setTags={() => {}} />
+      </div>
+
       <div className="w-full flex flex-row items-center justify-between pl-4 mb-6">
         <input
           placeholder="Enter a task"
