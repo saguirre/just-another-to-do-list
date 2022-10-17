@@ -38,7 +38,7 @@ const Home: NextPage = () => {
   const [autoSaved, setAutosaved] = useState<boolean>(true);
   const [tags, setTags] = useState<Tag[]>([]);
   const [suggestions, setSuggestions] = useState<Tag[]>([]);
-  const [selectedPriority, setSelectedPriority] = useState<todoPriority>({ id: 4, name: 'None' });
+  const [selectedPriority, setSelectedPriority] = useState<todoPriority | undefined>({ id: 4, name: 'None' });
   const user = useUser();
   const debounceUpdateTodo = useCallback(
     debounce(async (todo: Todo) => {

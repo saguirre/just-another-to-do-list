@@ -12,7 +12,7 @@ interface TaskInputProps {
   placeholder?: string;
   value?: string;
   tags: Tag[];
-  selectedPriority: todoPriority;
+  selectedPriority?: todoPriority;
   setSelectedPriority: (priority?: todoPriority) => void;
   setTags: (tags: Tag[]) => void;
   suggestions: Tag[];
@@ -51,7 +51,7 @@ export const TaskInput: React.FC<TaskInputProps> = ({
     if (
       splitVal &&
       splitVal?.[splitVal?.length - 1]?.length > 0 &&
-      selectedPriority.name?.toLowerCase() !== splitVal?.[splitVal?.length - 1]?.toLowerCase()
+      selectedPriority?.name?.toLowerCase() !== splitVal?.[splitVal?.length - 1]?.toLowerCase()
     ) {
       const priority = priorities.find((priority) =>
         priority.name.toLowerCase()?.includes(splitVal?.[splitVal?.length - 1]?.toLowerCase())
