@@ -158,7 +158,7 @@ export const TodoDisclosure: React.FC<TodoDisclosureProps> = ({
               leaveFrom="transform scale-y-100 opacity-100"
               leaveTo="transform scale-y-0 opacity-0"
             >
-              <Disclosure.Panel className="flex flex-col w-full items-start justify-start pl-4">
+              <Disclosure.Panel className="flex flex-col w-full items-start justify-start md:pl-4">
                 <SortableContext items={todos.map((todo) => todo.id || '')} strategy={verticalListSortingStrategy}>
                   {todos.map((todo) => {
                     return (

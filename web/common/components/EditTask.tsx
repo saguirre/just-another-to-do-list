@@ -8,6 +8,7 @@ import {
 import classNames from 'classnames';
 import { Todo } from '../models/todo';
 import { Spinner } from './Spinner';
+import { TagList } from './TagList';
 
 interface EditTaskProps {
   onClose: () => void;
@@ -60,11 +61,12 @@ export const EditTask: React.FC<EditTaskProps> = ({
       >
         <button
           onClick={() => onClose()}
-          className="flex flex-col items-center justify-center mb-3 mt-1 rounded-r-2xl pt-0.5 pb-1 pl-0.5 hover:bg-th-background-secondary"
+          className="flex flex-col w-16 items-center justify-center mb-3 rounded-b-2xl pt-0.5 pb-1 pl-0.5 hover:bg-th-background-secondary"
         >
           <ChevronDownIcon className="h-6 w-6 text-th-accent-light" />
         </button>
       </div>
+      <TagList tags={selectedTask?.todoTags?.map(({ tag }) => tag) || []} setTags={() => {}} />
       <div className="w-full flex flex-row items-center justify-between pl-4 mb-6">
         <input
           placeholder="Enter a task"

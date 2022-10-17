@@ -13,7 +13,10 @@ export default withApiAuth(async function userHandler(req: NextApiRequest, res: 
 
     switch (method) {
       case 'GET':
-        const todos = await prisma.todos.findUnique({ where: { id: Number(todoId) } });
+        const todos = await prisma.todos.findUnique({
+          where: { id: Number(todoId) },
+          include: { todoTags: { select: { tag: { include: true } } } },
+        });
         await prisma.$disconnect();
         res.status(200).json(todos);
         break;

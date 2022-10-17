@@ -19,6 +19,7 @@ import { TaskInput } from '../common/components/TaskInput';
 import { toast } from 'react-toastify';
 import { EditTask } from '../common/components/EditTask';
 import { LoadingWrapper } from '../common/components/LoadingWrapper';
+import { Tag } from '../common/models/tag';
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -35,12 +36,14 @@ const Home: NextPage = () => {
   const [autoSaving, setAutosaving] = useState<boolean>(false);
   const [onboardingModalOpen, setOnboardingModalOpen] = useState<boolean>(false);
   const [autoSaved, setAutosaved] = useState<boolean>(true);
-
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [suggestions, setSuggestions] = useState<Tag[]>([]);
   const user = useUser();
   const debounceUpdateTodo = useCallback(
     debounce(async (todo: Todo) => {
       setAutosaving(true);
-      const updatedTodo = await todoService?.updateTodoById({ ...todo }, todo?.id, user?.id);
+      const { todoTags, id, ...todoToSend} = todo;
+      const updatedTodo = await todoService?.updateTodoById({ ...todoToSend }, todo?.id, user?.id);
       if (updatedTodo) {
         setAutosaving(false);
         setAutosaved(true);
@@ -61,7 +64,10 @@ const Home: NextPage = () => {
       const optimisticTodo = { ...newTodo, id: 99999999 * Math.random() };
       setTodos((current: Todo[]): Todo[] => [optimisticTodo, ...current]);
       setNewTodoString('');
-      const addedTodo = await todoService?.createTodo(newTodo, user?.id);
+      const tagsToSend = tags;
+      setTags([]);
+      const addedTodo = await todoService?.createTodo(newTodo, user?.id, tagsToSend);
+
       if (addedTodo) {
         setTodos((current: Todo[]): Todo[] =>
           current.map((todo) => {
@@ -88,7 +94,8 @@ const Home: NextPage = () => {
     setTodoBeingUpdated(todoToUpdate);
     const previousTodo = todos.find((todoFromList) => todoFromList.id === todo.id);
     setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === todo.id ? todo : t)));
-    const updatedTodo = await todoService?.updateTodoById({ ...todo }, todo?.id, user?.id);
+    const { todoTags, ...todoToSend} = todo;
+    const updatedTodo = await todoService?.updateTodoById(todoToSend, todo?.id, user?.id);
     if (!updatedTodo) {
       toast.error('There was an error updating your task');
       setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === previousTodo?.id ? previousTodo || {} : t)));
@@ -317,6 +324,9 @@ const Home: NextPage = () => {
           </div>
           <TaskInput
             placeholder="Type out your Task and press enter."
+            tags={tags}
+            setTags={setTags}
+            suggestions={suggestions}
             onKeyDown={(e) => addNewTodo(e)}
             onChange={(value: string) => setNewTodoString(value)}
             value={newTodoString}

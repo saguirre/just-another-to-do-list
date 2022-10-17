@@ -59,12 +59,12 @@ export const TaskListItem: React.FC<TaskListItemProps> = forwardRef<HTMLDivEleme
                 }
               )}
             >
-              <div className="flex w-full flex-row items-center justify-start gap-3 transition-all duration-300">
+              <div className="flex w-full flex-row items-center justify-start transition-all duration-300">
                 <div
                   onPointerDown={onPointerDown}
-                  className="hover:cursor-grab touch-none hover:bg-th-background-third active:cursor-grabbing p-3 rounded-md flex flex-col items-center justify-center"
+                  className="hover:cursor-grab touch-none hover:bg-th-background-third active:cursor-grabbing p-1 rounded-md flex flex-col items-center justify-center"
                 >
-                  <VscGrabber className="text-th-primary-medium h-4 w-4" />
+                  <VscGrabber className="text-th-primary-medium h-3.5 w-3.5" />
                 </div>
                 {todo?.beingSlashed && <Spinner size="sm" className="ml-1" />}
                 {!todo?.beingSlashed && (
@@ -91,7 +91,7 @@ export const TaskListItem: React.FC<TaskListItemProps> = forwardRef<HTMLDivEleme
                             onChange(todo, status.COMPLETED);
                           }
                         }}
-                        className="flex flex-col justify-center items-center rounded-full p-1 hover:bg-th-background-third hover:ring-1 hover:ring-th-accent-dark"
+                        className="flex flex-col ml-1 mr-2 justify-center items-center rounded-full p-1 hover:bg-th-background-third hover:ring-1 hover:ring-th-accent-dark"
                       >
                         <StopIcon className="h-5 w-5 text-th-primary-medium" />
                       </button>
