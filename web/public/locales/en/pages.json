@@ -1,0 +1,31 @@
+{
+  "home": {
+    "title": "Home",
+    "tasks": "Tasks",
+    "completed": "Completed",
+    "homeDropdown": {
+      "hideCompleted": "Hide Completed",
+      "showCompleted": "Show Completed",
+      "hideDetails": "Hide Details",
+      "showDetails": "Show Details",
+      "hideDeleted": "Hide Deleted",
+      "showDeleted": "Show Deleted"
+    },
+    "taskInput": {
+      "placeholder": "What needs to be done? (You can add tags or priorities by typing #tagname or !priority)"
+    },
+    "todoDropdown": {
+      "delete": "Delete",
+      "viewTags": "View Tags",
+      "revive": "Revive"
+    },
+    "editTask": {
+      "input": {
+        "placeholder": "Edit task"
+      },
+      "textarea": {
+        "placeholder": "Task Description"
+      }
+    }
+  }
+}

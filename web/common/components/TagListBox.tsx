@@ -1,8 +1,7 @@
 import { Listbox, Transition } from '@headlessui/react';
-import { CheckIcon } from '@heroicons/react/24/outline';
-import classNames from 'classnames';
 import { Fragment } from 'react';
 import { Tag } from '../models/tag';
+import { useTranslation } from 'next-i18next';
 
 interface TagListBoxProps {
   suggestions: Tag[];
@@ -10,6 +9,7 @@ interface TagListBoxProps {
   open: boolean;
 }
 export const TagListBox: React.FC<TagListBoxProps> = ({ suggestions, searchString, open }) => {
+  const { t } = useTranslation('common');
   return (
     <div className="absolute top-10 z-20 w-72">
       <Listbox>
@@ -26,7 +26,7 @@ export const TagListBox: React.FC<TagListBoxProps> = ({ suggestions, searchStrin
               className="absolute mt-1 max-h-60 w-fit break-all overflow-auto rounded-md bg-th-background-secondary py-1 text-base shadow-lg ring-1 ring-bg-th-background ring-opacity-5 focus:outline-none sm:text-sm"
             >
               <div className="py-1 flex flex-row items-center justify-start gap-2 px-3 text-th-primary-medium text-sm w-full text-start">
-                Create tag:
+                {t('tags.createTag')}
                 <span className="inline-block w-fit flex-wrap bg-th-accent-dark rounded-full px-2.5 py-1 font-semibold text-sm text-th-primary-extra-light">
                   #{searchString?.split('#')?.[searchString?.split('#')?.length - 1] || ''}
                 </span>

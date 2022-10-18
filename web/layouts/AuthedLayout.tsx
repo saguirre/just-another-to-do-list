@@ -13,11 +13,7 @@ import {
 import { StaticDesktopSidebar } from '../common/components/StaticDesktopSidebar';
 import { ThemePopover } from '../common/components/ThemePopover';
 import { MobileSidebar } from '../common/components/MobileSidebar';
-
-const navigation = [
-  { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
-  { name: 'Projects', href: '#', icon: FolderIcon, current: false },
-];
+import { useTranslation } from 'next-i18next';
 
 interface AuthedLayoutProps {
   children: React.ReactNode;
@@ -26,6 +22,11 @@ interface AuthedLayoutProps {
 export const AuthedLayout: React.FC<AuthedLayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const { t } = useTranslation('common');
+  const navigation = [
+    { name: t('sidebar.home'), href: '#', icon: HomeIcon, current: true },
+    { name: t('sidebar.projects'), href: '#', icon: FolderIcon, current: false },
+  ];
 
   return (
     <>
@@ -124,10 +125,15 @@ export const AuthedLayout: React.FC<AuthedLayoutProps> = ({ children }) => {
         {/* Sidebar for mobile */}
         <MobileSidebar navigation={navigation} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-        <div className={classNames("sticky top-0 z-20 flex-shrink-0 flex flex-row items-center md:justify-end md:px-2 justify-between h-16 transition-all duration-300 bg-th-background", {
-          "md:ml-72": !collapsed,
-          "md:ml-28": collapsed,
-        })}>
+        <div
+          className={classNames(
+            'sticky top-0 z-20 flex-shrink-0 flex flex-row items-center md:justify-end md:px-2 justify-between h-16 transition-all duration-300 bg-th-background',
+            {
+              'md:ml-72': !collapsed,
+              'md:ml-28': collapsed,
+            }
+          )}
+        >
           <button
             type="button"
             className="ml-2 text-th-primary-medium p-2 flex flex-col items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-th-accent-dark md:hidden"

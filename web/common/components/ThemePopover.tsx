@@ -3,41 +3,35 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import classNames from 'classnames';
 import { useTheme } from 'next-themes';
 import { Fragment, useEffect, useState } from 'react';
-
+import { useTranslation } from 'next-i18next';
 const themes: {
-  name: string;
   theme: string;
   color: string;
   isDark?: boolean;
 }[] = [
   {
-    name: 'Light',
     theme: 'light',
     color: 'bg-blue-500',
   },
   {
-    name: 'Dark',
     theme: 'dark',
     isDark: true,
     color: 'bg-blue-500',
   },
-  { name: 'Pink', color: 'bg-pink-500', theme: 'pink' },
-  { name: 'Dark Pink', color: 'bg-pink-500', isDark: true, theme: 'dark-pink' },
-  { name: 'Green', color: 'bg-green-500', theme: 'green' },
-  { name: 'Dark Green', color: 'bg-green-500', isDark: true, theme: 'dark-green' },
-  { name: 'Amber', color: 'bg-amber-500', theme: 'amber' },
-  { name: 'Dark Amber', color: 'bg-amber-500', isDark: true, theme: 'dark-amber' },
+  { color: 'bg-pink-500', theme: 'pink' },
+  { color: 'bg-pink-500', isDark: true, theme: 'dark-pink' },
+  { color: 'bg-green-500', theme: 'green' },
+  { color: 'bg-green-500', isDark: true, theme: 'dark-green' },
+  { color: 'bg-amber-500', theme: 'amber' },
+  { color: 'bg-amber-500', isDark: true, theme: 'dark-amber' },
 ];
 
 export const ThemePopover = () => {
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
-
+  const { t } = useTranslation('common');
   const getThemeName = (name: string) => {
-    if (name.includes('-')) {
-      return `${name?.split('-')[0]} ${name?.split('-')[1]}`;
-    }
-    return name;
+    return t(`themes.${name.toLowerCase()}`);
   };
 
   useEffect(() => {
@@ -80,7 +74,7 @@ export const ThemePopover = () => {
                 <div className="relative grid gap-8 bg-th-background-secondary p-4 lg:grid-cols-2">
                   {themes.map((item) => (
                     <button
-                      key={item.name}
+                      key={item.theme}
                       onClick={() => setTheme(item.theme)}
                       className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out hover:bg-th-background-third  focus:outline-none focus-visible:ring focus-visible:ring-th-accent-medium focus-visible:ring-opacity-50"
                     >
@@ -95,7 +89,7 @@ export const ThemePopover = () => {
                         </div>
                       </div>
                       <div className="ml-0.5">
-                        <p className="text-sm font-medium text-th-primary-light">{item.name}</p>
+                        <p className="text-sm font-medium text-th-primary-light">{t(`themes.${item.theme}`)}</p>
                       </div>
                     </button>
                   ))}

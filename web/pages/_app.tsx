@@ -12,6 +12,8 @@ import { Todo } from '../common/models/todo';
 import { ToastContainer, TypeOptions, ToastPosition } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toastClasses } from '../common/toast-classes';
+import nextI18NextConfig from '../next-i18next.config.js';
+import { appWithTranslation } from 'next-i18next';
 
 const JustAnotherToDoList = ({ Component, pageProps }: AppProps) => {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
@@ -46,4 +48,4 @@ const JustAnotherToDoList = ({ Component, pageProps }: AppProps) => {
   );
 };
 
-export default JustAnotherToDoList;
+export default appWithTranslation(JustAnotherToDoList, nextI18NextConfig);

@@ -1,0 +1,52 @@
+{
+  "languages": {
+    "english": "English",
+    "spanish": "Spanish"
+  },
+  "header": {
+    "signin": "Sign in",
+    "signinPrompt": "Sign in to get started!",
+    "signInPopoverTitle": "Forget about passwords! Sign in using your favorite Auth provider!"
+  },
+  "themes": {
+    "system": "System",
+    "dark": "Dark",
+    "light": "Light",
+    "pink": "Pink",
+    "dark-pink": "Dark Pink",
+    "green": "Green",
+    "dark-green": "Dark Green",
+    "amber": "Amber",
+    "dark-amber": "Dark Amber"
+  },
+  "sidebar": {
+    "home": "Home",
+    "projects": "Projects",
+    "dropdown": {
+      "profile": "View Profile",
+      "logout": "Logout"
+    }
+  },
+  "tags": {
+    "createTag": "Create Tag"
+  },
+  "priorities": {
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low",
+    "none": "None"
+  },
+  "onboardingModal": {
+    "closedEnvelope": {
+      "title": "Welcome!",
+      "description": "Psst... click on the envelope to get started!"
+    },
+    "openEnvelope": {
+      "title": "Hurray!",
+      "description": "Now that we've moved past this very necessary hurdle... We've prepped a few things for you to get started.",
+      "skipAdvice": "(Or if you're down for some investigation, you can totally skip the tutorial)",
+      "skip": "Skip",
+      "start": "Get Started"
+    }
+  }
+}

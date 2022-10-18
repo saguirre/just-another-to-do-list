@@ -1,16 +1,13 @@
-import { Transition, Dialog } from '@headlessui/react';
 import Head from 'next/head';
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import classNames from 'classnames';
-import { Bars3Icon, HomeIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, FolderIcon, HomeIcon } from '@heroicons/react/24/outline';
 import { StaticDesktopSidebar } from '../common/components/StaticDesktopSidebar';
 import { ThemePopover } from '../common/components/ThemePopover';
 import { LoginButton } from '../common/components/LoginButton';
 import { MobileSidebar } from '../common/components/MobileSidebar';
-import { useTheme } from 'next-themes';
-import { Bars3CenterLeftIcon } from '@heroicons/react/20/solid';
-
-const navigation = [{ name: 'Dashboard', href: '#', icon: HomeIcon, current: true }];
+import { useTranslation } from 'next-i18next';
+import { LanguagePopover } from '../common/components/LanguagePopover';
 
 interface PublicLayoutProps {
   children: React.ReactNode;
@@ -19,7 +16,9 @@ interface PublicLayoutProps {
 export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const { theme } = useTheme();
+  const { t } = useTranslation('common');
+
+  const navigation = [{ name: t('sidebar.home'), href: '#', icon: HomeIcon, current: true }];
   return (
     <>
       <Head>
@@ -56,6 +55,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
             <Bars3Icon className="h-6 w-6" aria-hidden="true" />
           </button>
           <div className="flex flex-row items-center justify-end gap-2 px-2">
+            <LanguagePopover/>
             <LoginButton />
             <ThemePopover />
           </div>

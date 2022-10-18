@@ -1,0 +1,52 @@
+{
+  "languages": {
+    "english": "Inglés",
+    "spanish": "Español"
+  },
+  "header": {
+    "signin": "Ingresar",
+    "signinPrompt": "Ingresa para comenzar!",
+    "signInPopoverTitle": "Olvídate de las contraseñas! Ingresa usando tu proveedor favorito!"
+  },
+  "themes": {
+    "system": "Sistema",
+    "dark": "Oscuro",
+    "light": "Claro",
+    "pink": "Rosado",
+    "dark-pink": "Rosado Nocturno",
+    "green": "Verde",
+    "dark-green": "Verde Nocturno",
+    "amber": "Ambar",
+    "dark-amber": "Ambar Nocturno"
+  },
+  "sidebar": {
+    "home": "Inicio",
+    "projects": "Proyectos",
+    "dropdown": {
+      "profile": "Ver Perfil",
+      "logout": "Salir"
+    }
+  },
+  "tags": {
+    "createTag": "Crear Etiqueta"
+  },
+  "priorities": {
+    "high": "Alta",
+    "medium": "Media",
+    "low": "Baja",
+    "none": "Ninguna"
+  },
+  "onboardingModal": {
+    "closedEnvelope": {
+      "title": "Bienvenido!",
+      "description": "Psst... presiona en el sobre para empezar!"
+    },
+    "openEnvelope": {
+      "title": "Vamos!",
+      "description": "Ahora que hemos pasado por este muy necesario paso... Preparamos algunas cosas para que empieces.",
+      "skipAdvice": "(O si quieres investigar, puedes saltear el tutorial)",
+      "skip": "Saltear",
+      "start": "Comenzar"
+    }
+  }
+}

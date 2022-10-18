@@ -1,0 +1,31 @@
+{
+  "home": {
+    "title": "Inicio",
+    "tasks": "Tareas",
+    "completed": "Completadas",
+    "homeDropdown": {
+      "hideCompleted": "Esconder Completadas",
+      "showCompleted": "Mostrar Completadas",
+      "hideDetails": "Esconder Detalles",
+      "showDetails": "Mostrar Detalles",
+      "hideDeleted": "Esconder Borradas",
+      "showDeleted": "Mostrar Borradas"
+    },
+    "taskInput": {
+      "placeholder": "Que tienes que hacer? (Agrega etiquetas o prioridades escribiendo #etiqueta o !prioridad)"
+    },
+    "todoDropdown": {
+      "delete": "Borrar",
+      "viewTags": "Ver Etiquetas",
+      "revive": "Revivir"
+    },
+    "editTask": {
+      "input": {
+        "placeholder": "Editar tarea"
+      },
+      "textarea": {
+        "placeholder": "Descripción de la tarea"
+      }
+    }
+  }
+}

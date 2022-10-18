@@ -5,7 +5,7 @@ import { Fragment } from 'react';
 import { AiOutlineGithub } from 'react-icons/ai';
 import { FcGoogle } from 'react-icons/fc';
 import { FaDiscord } from 'react-icons/fa';
-import { useTheme } from 'next-themes';
+import { useTranslation } from 'next-i18next';
 import { useSessionContext } from '@supabase/auth-helpers-react';
 import { ArrowUturnRightIcon } from '@heroicons/react/24/outline';
 
@@ -31,7 +31,7 @@ const authProviders: { name: string; provider: Provider; redirectTo: string; ico
 ];
 
 export const LoginButton = () => {
-  const { theme } = useTheme();
+  const { t } = useTranslation('common');
   const { supabaseClient } = useSessionContext();
   return (
     <Popover className="relative">
@@ -40,7 +40,9 @@ export const LoginButton = () => {
           <div className="absolute -left-4 -bottom-4">
             <div className="relative flex flex-row items-center justify-start gap-2 w-[200px]">
               <ArrowUturnRightIcon className="absolute left-[0px] -top-4 h-4 w-4 text-th-primary-dark rotate-[-40deg]" />
-              <span className="absolute text-sm left-[18px] -top-3 text-th-primary-light">Login to get started!</span>
+              <span className="absolute text-sm left-[18px] -top-3 text-th-primary-light">
+                {t('header.signinPrompt')}
+              </span>
             </div>
           </div>
           <Popover.Button
@@ -51,7 +53,7 @@ export const LoginButton = () => {
               }
             )}
           >
-            <span>Login</span>
+            <span>{t('header.signin')}</span>
           </Popover.Button>
           <Transition
             as={Fragment}
@@ -65,9 +67,7 @@ export const LoginButton = () => {
             <Popover.Panel className="absolute -left-[35px] md:-left-[130px] z-10 mt-3 w-screen max-w-xs md:max-w-sm -translate-x-1/3 md:-translate-x-1/2 transform px-4 sm:px-0 lg:max-w-md rounded-md">
               <div className="overflow-hidden divide-y divide-th-primary-medium rounded-lg p-4  bg-th-background-secondary shadow-lg ring-1 ring-black ring-opacity-5">
                 <div className="flex flex-col items-center justify-center">
-                  <span className="text-th-primary-light text-center mb-4">
-                    Forget about passwords! Sign in using your favorite Auth provider!
-                  </span>
+                  <span className="text-th-primary-light text-center mb-4">{t('header.signInPopoverTitle')}</span>
                 </div>
                 <div className="relative grid gap-8 pt-6 pb-4 px-6 bg-th-background-secondary lg:grid-cols-2">
                   {authProviders.map((item) => (

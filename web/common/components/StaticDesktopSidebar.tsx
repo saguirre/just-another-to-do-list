@@ -11,6 +11,7 @@ import classNames from 'classnames';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface StaticDesktopSidebarProps {
   navigation: any[];
@@ -22,7 +23,7 @@ export const StaticDesktopSidebar: React.FC<StaticDesktopSidebarProps> = ({ navi
   const router = useRouter();
   const user = useUser();
   const { supabaseClient } = useSessionContext();
-
+  const { t } = useTranslation('common');
   return (
     <div
       className={classNames(
@@ -85,8 +86,12 @@ export const StaticDesktopSidebar: React.FC<StaticDesktopSidebarProps> = ({ navi
                         />
                         {!collapsed && (
                           <span className="flex-1 flex flex-col min-w-0">
-                            <span className="text-th-primary-extra-light text-sm font-medium truncate">{user?.email}</span>
-                            <span className="text-th-primary-extra-light text-sm capitalize truncate">{user?.app_metadata.provider}</span>
+                            <span className="text-th-primary-extra-light text-sm font-medium truncate">
+                              {user?.email}
+                            </span>
+                            <span className="text-th-primary-extra-light text-sm capitalize truncate">
+                              {user?.app_metadata.provider}
+                            </span>
                           </span>
                         )}
                       </span>
@@ -112,7 +117,7 @@ export const StaticDesktopSidebar: React.FC<StaticDesktopSidebarProps> = ({ navi
                     <Menu.Item>
                       <button className="w-full text-start hover:bg-th-background-third text-xs text-th-primary-medium p-3 rounded-t-lg flex flex-row items-center options-center justify-start gap-2">
                         <UserIcon className="h-4 w-4 text-th-primary-medium" />
-                        <span className="text-xs text-th-primary-medium">View Profile</span>
+                        <span className="text-xs text-th-primary-medium">{t('sidebar.dropdown.profile')}</span>
                       </button>
                     </Menu.Item>
                     <Menu.Item>
@@ -124,7 +129,7 @@ export const StaticDesktopSidebar: React.FC<StaticDesktopSidebarProps> = ({ navi
                         className="w-full text-start hover:bg-th-background-third text-xs text-th-primary-medium p-3 rounded-b-lg flex flex-row items-center options-center justify-start gap-2"
                       >
                         <ArrowLeftOnRectangleIcon className="h-4 w-4 text-th-primary-medium" />
-                        <span className="text-xs text-th-primary-medium">Logout</span>
+                        <span className="text-xs text-th-primary-medium">{t('sidebar.dropdown.logout')}</span>
                       </button>
                     </Menu.Item>
                   </Menu.Items>

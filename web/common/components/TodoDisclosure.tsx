@@ -32,6 +32,8 @@ import {
 } from '@dnd-kit/sortable';
 import { SortableTaskListItem } from './SortableTaskListItem';
 import { TaskListItem } from './TaskListItem';
+import { useTranslation } from 'next-i18next';
+
 interface TodoDisclosureProps {
   title: string;
   todos: Todo[];
@@ -56,6 +58,7 @@ export const TodoDisclosure: React.FC<TodoDisclosureProps> = ({
   showDeleted,
 }) => {
   const router = useRouter();
+  const { t } = useTranslation('pages');
   const [menuOptions, setMenuOptions] = useState<OptionMenuItem[]>([]);
   const [deletedMenuOptions, setDeletedMenuOptions] = useState<OptionMenuItem[]>([]);
   const [activeId, setActiveId] = useState(null);
@@ -70,13 +73,13 @@ export const TodoDisclosure: React.FC<TodoDisclosureProps> = ({
     if (router.isReady) {
       const menuOptionsDefault: OptionMenuItem[] = [
         {
-          label: 'View Tags',
+          label: t('home.todoDropdown.viewTags'),
           action: (item: OptionMenuItem, itemAttachedToOptions?: Todo) => {},
           className: '',
           icon: TagIcon,
         },
         {
-          label: 'Delete',
+          label: t('home.todoDropdown.delete'),
           action: (item: OptionMenuItem, itemAttachedToOptions?: Todo) => {
             onDelete(itemAttachedToOptions);
           },
@@ -87,13 +90,13 @@ export const TodoDisclosure: React.FC<TodoDisclosureProps> = ({
       setMenuOptions(menuOptionsDefault);
       const deletedMenuOptions: OptionMenuItem[] = [
         {
-          label: 'View Tags',
+          label: t('home.todoDropdown.viewTags'),
           action: (item: OptionMenuItem, itemAttachedToOptions?: Todo) => {},
           className: '',
           icon: TagIcon,
         },
         {
-          label: 'Revive',
+          label: t('home.todoDropdown.revive'),
           action: (item: OptionMenuItem, itemAttachedToOptions?: Todo) => {
             onRevive(itemAttachedToOptions);
           },
