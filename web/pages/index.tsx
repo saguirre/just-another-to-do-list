@@ -168,10 +168,8 @@ const Home: NextPage = () => {
   useEffect(() => {
     setHomeMenuOptions((current) =>
       current.map((option: OptionMenuItem) => {
-        console.log(option);
         if (option.label.toLowerCase().includes('deleted') || option.label.toLowerCase().includes('borradas')) {
           const label = showDeleted ? t('home.homeDropdown.hideDeleted') : t('home.homeDropdown.showDeleted');
-          console.log(label);
           const newOption = {
             ...option,
             label,
