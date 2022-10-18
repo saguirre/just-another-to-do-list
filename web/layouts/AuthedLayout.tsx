@@ -14,6 +14,7 @@ import { StaticDesktopSidebar } from '../common/components/StaticDesktopSidebar'
 import { ThemePopover } from '../common/components/ThemePopover';
 import { MobileSidebar } from '../common/components/MobileSidebar';
 import { useTranslation } from 'next-i18next';
+import { LanguagePopover } from '../common/components/LanguagePopover';
 
 interface AuthedLayoutProps {
   children: React.ReactNode;
@@ -143,6 +144,7 @@ export const AuthedLayout: React.FC<AuthedLayoutProps> = ({ children }) => {
             <Bars3Icon className="h-6 w-6" aria-hidden="true" />
           </button>
           <div className="flex flex-row items-center justify-end gap-2 px-2">
+            <LanguagePopover />
             <ThemePopover />
           </div>
         </div>
