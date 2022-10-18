@@ -5,14 +5,16 @@ import { Spinner } from './Spinner';
 
 interface OptionMenuButtonProps {
   option: OptionMenuItem;
+  closeSelf: () => void;
   itemAttachedToOptions?: Todo;
 }
-export const OptionMenuButton: React.FC<OptionMenuButtonProps> = ({ option, itemAttachedToOptions }) => {
+export const OptionMenuButton: React.FC<OptionMenuButtonProps> = ({ option, itemAttachedToOptions, closeSelf }) => {
   return (
     <button
       onClick={(event) => {
         event.preventDefault();
         event.stopPropagation();
+        closeSelf();
         option.action(option, itemAttachedToOptions);
       }}
       className={classNames(

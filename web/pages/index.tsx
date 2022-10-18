@@ -137,8 +137,8 @@ const Home: NextPage = () => {
       setTimeout(() => {
         setTodoBeingUpdated(undefined);
       }, 300);
-
-      const revivedTodo = await todoService?.updateTodoById({ ...todo, deleted: false }, todo?.id, user?.id);
+      const { todoTags, todosPriority, ...todoToSend } = todo;
+      const revivedTodo = await todoService?.updateTodoById({ ...todoToSend, deleted: false }, todo?.id, user?.id);
       if (!revivedTodo) {
         setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === previousTodo.id ? previousTodo : t)));
       }

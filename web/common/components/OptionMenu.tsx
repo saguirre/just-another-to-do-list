@@ -5,6 +5,7 @@ import { OptionMenuItem } from '../models/option-menu-item';
 import { Todo } from '../models/todo';
 import { OptionMenuButton } from './OptionMenuButton';
 import { status } from '@prisma/client';
+import { useRef } from 'react';
 
 interface OptionMenuProps {
   options: OptionMenuItem[];
@@ -12,11 +13,13 @@ interface OptionMenuProps {
 }
 
 export const OptionMenu: React.FC<OptionMenuProps> = ({ options, itemAttachedToOptions }) => {
+  const ref = useRef<HTMLButtonElement>(null);
   return (
     <Popover className="absolute right-2 top-2 z-10">
       {({ open }) => (
         <>
           <Popover.Button
+            ref={ref}
             className={classNames(
               'hover:bg-th-background-secondary rounded-full p-1 flex flex-col justify-center items-center transition-all',
               {
@@ -43,6 +46,7 @@ export const OptionMenu: React.FC<OptionMenuProps> = ({ options, itemAttachedToO
             <Popover.Panel className="absolute -left-[75px] z-10 mt-1 ring-[0.5px] ring-th-accent-medium outline-none w-40 h-fit bg-th-background-secondary -translate-x-1/2 transform rounded-lg">
               {options.map((option: OptionMenuItem, index: number) => (
                 <OptionMenuButton
+                  closeSelf={() => ref.current?.click()}
                   key={option.label + index}
                   itemAttachedToOptions={itemAttachedToOptions}
                   option={
