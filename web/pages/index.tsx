@@ -96,7 +96,7 @@ const Home: NextPage = () => {
     setTodoBeingUpdated(todoToUpdate);
     const previousTodo = todos.find((todoFromList) => todoFromList.id === todo.id);
     setTodos((current: Todo[]): Todo[] => current.map((t) => (t.id === todo.id ? todo : t)));
-    const { todoTags, ...todoToSend } = todo;
+    const { todoTags, todosPriority, ...todoToSend } = todo;
     const updatedTodo = await todoService?.updateTodoById(todoToSend, todo?.id, user?.id);
     if (!updatedTodo) {
       toast.error('There was an error updating your task');
