@@ -63,12 +63,13 @@ export const StaticDesktopSidebar: React.FC<StaticDesktopSidebarProps> = ({ navi
             </button>
           )}
         </div>
-        <div className="flex flex-col flex-grow pt-5 overflow-y-auto bg-th-accent-dark border-r border-th-accent-medium">
+        <div className="flex flex-col flex-grow pt-5 overflow-y-hidden overflow-x-hidden bg-th-accent-dark border-r border-th-accent-medium">
           <div className="mt-5 flex-1 flex flex-col">
             {user && (
               <Menu as="div" className="px-2 mt-1 mb-3 relative inline-block text-left">
                 <div>
                   <Menu.Button
+                    onClick={() => (collapsed ? setCollapsed(!collapsed) : null)}
                     className={classNames(
                       'group w-full rounded-md py-2 text-sm text-left font-medium text-gray focus:outline-none transition-transform duration-300',
                       {
