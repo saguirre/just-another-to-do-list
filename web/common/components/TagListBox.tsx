@@ -25,9 +25,9 @@ export const TagListBox: React.FC<TagListBoxProps> = ({ suggestions, searchStrin
               static
               className="absolute mt-1 max-h-60 w-fit break-all overflow-auto rounded-md bg-th-background-secondary py-1 text-base shadow-lg ring-1 ring-bg-th-background ring-opacity-5 focus:outline-none sm:text-sm"
             >
-              <div className="py-1 flex flex-row items-center justify-start gap-2 px-3 text-th-primary-medium text-xs w-full text-start">
+              <div className="py-1 flex flex-row items-center justify-start gap-2 px-3 text-th-primary-medium text-sm w-full text-start">
                 Create tag:
-                <span className="inline-block w-fit flex-wrap bg-th-accent-dark rounded-full px-1.5 py-0.5 font-semibold text-xs text-th-primary-medium">
+                <span className="inline-block w-fit flex-wrap bg-th-accent-dark rounded-full px-2.5 py-1 font-semibold text-sm text-th-primary-extra-light">
                   #{searchString?.split('#')?.[searchString?.split('#')?.length - 1] || ''}
                 </span>
               </div>

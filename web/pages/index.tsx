@@ -63,7 +63,7 @@ const Home: NextPage = () => {
       };
 
       const optimisticTodo = { ...newTodo, id: 99999999 * Math.random() };
-      setTodos((current: Todo[]): Todo[] => [optimisticTodo, ...current]);
+      setTodos((current: Todo[]): Todo[] => [...current, optimisticTodo]);
       setNewTodoString('');
       const tagsToSend = tags;
       setTags([]);
