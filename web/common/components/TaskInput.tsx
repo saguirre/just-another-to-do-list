@@ -6,6 +6,7 @@ import { PriorityListBox } from './PriorityListBox';
 import { PrioritySpan } from './PrioritySpan';
 import { TagList } from './TagList';
 import { TagListBox } from './TagListBox';
+import { useTranslation } from 'next-i18next';
 
 interface TaskInputProps {
   disabled?: boolean;
@@ -32,6 +33,7 @@ export const TaskInput: React.FC<TaskInputProps> = ({
   onChange,
   onKeyDown,
 }) => {
+  const { t } = useTranslation('common');
   const [tagDropdownVisible, setTagDropdownVisible] = useState<boolean>(false);
   const [priorityDropdownVisible, setPriorityDropdownVisible] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -55,7 +57,7 @@ export const TaskInput: React.FC<TaskInputProps> = ({
     ) {
       const priority = priorities.find((priority) =>
         priority.name.toLowerCase()?.includes(splitVal?.[splitVal?.length - 1]?.toLowerCase())
-      ) || { id: 4, name: 'None' };
+      ) || { id: 4, name: t('priorities.none') };
       if (priority) {
         setSelectedPriority(priority);
       }
@@ -79,7 +81,7 @@ export const TaskInput: React.FC<TaskInputProps> = ({
     } else if (event.key === 'Backspace' && (value?.endsWith('!') || value?.length === 0) && selectedPriority) {
       setTagDropdownVisible(false);
       setPriorityDropdownVisible(false);
-      setSelectedPriority({ id: 4, name: 'None' });
+      setSelectedPriority({ id: 4, name: t('priorities.none') });
     } else if (priorityDropdownVisible && value?.includes('!') && PRIORITY_DELIMITER.includes(event.key)) {
       setPriorityDropdownVisible(false);
       event.preventDefault();
@@ -154,7 +156,7 @@ export const TaskInput: React.FC<TaskInputProps> = ({
           onKeyDown={(e) => internalOnKeyDown(e)}
           onChange={(e) => internalOnChange(e)}
           value={value || ''}
-          className="w-full bg-transparent outline-none h-6"
+          className="w-full placeholder:text-sm bg-transparent outline-none h-6 text-ellipsis"
           style={{ paddingLeft: 0 }}
           disabled={disabled}
         />

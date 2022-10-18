@@ -20,8 +20,12 @@ import { toast } from 'react-toastify';
 import { EditTask } from '../common/components/EditTask';
 import { LoadingWrapper } from '../common/components/LoadingWrapper';
 import { Tag } from '../common/models/tag';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const Home: NextPage = () => {
+  const { t } = useTranslation(['pages', 'common']);
+
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [homeMenuOptions, setHomeMenuOptions] = useState<OptionMenuItem[]>([]);
@@ -67,7 +71,7 @@ const Home: NextPage = () => {
       setNewTodoString('');
       const tagsToSend = tags;
       setTags([]);
-      setSelectedPriority({ id: 4, name: 'None' });
+      setSelectedPriority({ id: 4, name: t('common.priorities.none') });
       const addedTodo = await todoService?.createTodo(newTodo, user?.id, tagsToSend, selectedPriority);
 
       if (addedTodo) {
@@ -148,10 +152,10 @@ const Home: NextPage = () => {
   useEffect(() => {
     setHomeMenuOptions((current) =>
       current.map((option: OptionMenuItem) => {
-        if (option.label.toLowerCase().includes('completed')) {
+        if (option.label.toLowerCase().includes('completed') || option.label.toLowerCase().includes('completadas')) {
           const newOption = {
             ...option,
-            label: showCompleted ? 'Hide Completed' : 'Show Completed',
+            label: showCompleted ? t('home.homeDropdown.hideCompleted') : t('home.homeDropdown.showCompleted'),
             icon: showCompleted ? EyeSlashIcon : EyeIcon,
           };
           return newOption;
@@ -164,10 +168,13 @@ const Home: NextPage = () => {
   useEffect(() => {
     setHomeMenuOptions((current) =>
       current.map((option: OptionMenuItem) => {
-        if (option.label.toLowerCase().includes('deleted')) {
+        console.log(option);
+        if (option.label.toLowerCase().includes('deleted') || option.label.toLowerCase().includes('borradas')) {
+          const label = showDeleted ? t('home.homeDropdown.hideDeleted') : t('home.homeDropdown.showDeleted');
+          console.log(label);
           const newOption = {
             ...option,
-            label: showDeleted ? 'Hide Deleted' : 'Show Deleted',
+            label,
             icon: showDeleted ? TbTrashOff : TrashIcon,
           };
           return newOption;
@@ -180,10 +187,10 @@ const Home: NextPage = () => {
   useEffect(() => {
     setHomeMenuOptions((current) =>
       current.map((option: OptionMenuItem) => {
-        if (option.label.toLowerCase().includes('details')) {
+        if (option.label.toLowerCase().includes('details') || option.label.toLowerCase().includes('detalles')) {
           const newOption = {
             ...option,
-            label: showDescription ? 'Hide Details' : 'Show Details',
+            label: showDescription ? t('home.homeDropdown.hideDetails') : t('home.homeDropdown.showDetails'),
             icon: showDescription ? Bars3Icon : Bars3BottomLeftIcon,
           };
           return newOption;
@@ -275,7 +282,7 @@ const Home: NextPage = () => {
       }
       const homeMenuOptionsDefault: OptionMenuItem[] = [
         {
-          label: 'Hide Completed',
+          label: t('home.homeDropdown.hideCompleted'),
           action: (item: OptionMenuItem) => {
             setShowCompleted((current) => !current);
           },
@@ -283,7 +290,7 @@ const Home: NextPage = () => {
           icon: EyeSlashIcon,
         },
         {
-          label: 'Show Details',
+          label: t('home.homeDropdown.showDetails'),
           action: (item: OptionMenuItem) => {
             setShowDescription((current) => !current);
           },
@@ -291,7 +298,7 @@ const Home: NextPage = () => {
           icon: Bars3BottomLeftIcon,
         },
         {
-          label: 'Show Deleted',
+          label: t('home.homeDropdown.showDeleted'),
           action: (item: OptionMenuItem) => {
             setShowDeleted((current) => !current);
           },
@@ -313,19 +320,19 @@ const Home: NextPage = () => {
       >
         <div
           className={classNames(
-            'w-screen md:w-1/2 overflow-y-scroll min-h-screen h-full flex flex-col space-y-3 p-4 transition-all duration-300',
+            'w-screen overflow-y-scroll min-h-screen h-full flex flex-col space-y-3 p-4 transition-all duration-300',
             {
-              'mt-0': selectedTodo,
-              'mt-6': !selectedTodo,
+              'mt-0 md:w-1/2': selectedTodo,
+              'mt-6 md:w-2/3': !selectedTodo,
             }
           )}
         >
           <div className="relative w-full flex flex-row items-center justify-between">
-            <h1 className="text-2xl text-th-primary-dark">Home</h1>
+            <h1 className="text-2xl text-th-primary-dark">{t('home.title')}</h1>
             <OptionMenu options={homeMenuOptions} />
           </div>
           <TaskInput
-            placeholder="Type a task. You can add tags with # and priorities with !"
+            placeholder={t('home.taskInput.placeholder')}
             tags={tags}
             setSelectedPriority={setSelectedPriority}
             selectedPriority={selectedPriority}
@@ -338,7 +345,7 @@ const Home: NextPage = () => {
           />
           <div className="flex flex-col w-full items-start justify-start">
             <TodoDisclosure
-              title="Todos"
+              title={t('home.tasks')}
               todos={todos
                 .sort((a, b) => (a.deleted ? 1 : -1))
                 .filter((todoFromList) => todoFromList.status === status.TODO)}
@@ -354,7 +361,7 @@ const Home: NextPage = () => {
             />
             {showCompleted && (
               <TodoDisclosure
-                title="Completed"
+                title={t('home.completed')}
                 todos={todos
                   .sort((a, b) => (a.deleted ? 1 : -1))
                   .filter((todoFromList) => todoFromList.status === status.COMPLETED)}
@@ -394,5 +401,11 @@ const Home: NextPage = () => {
     </LoadingWrapper>
   );
 };
+
+export const getServerSideProps = async ({ locale }: { locale: string }) => ({
+  props: {
+    ...(await serverSideTranslations(locale || 'es', ['common', 'pages'])),
+  },
+});
 
 export default Home;

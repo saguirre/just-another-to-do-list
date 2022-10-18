@@ -10,6 +10,7 @@ import { Todo } from '../models/todo';
 import { PrioritySpan } from './PrioritySpan';
 import { Spinner } from './Spinner';
 import { TagList } from './TagList';
+import { useTranslation } from 'next-i18next';
 
 interface EditTaskProps {
   onClose: () => void;
@@ -28,6 +29,7 @@ export const EditTask: React.FC<EditTaskProps> = ({
   autoSaved,
   autoSaving,
 }) => {
+  const { t } = useTranslation('pages');
   return (
     <div
       className={classNames(
@@ -82,7 +84,7 @@ export const EditTask: React.FC<EditTaskProps> = ({
 
       <div className="w-full flex flex-row items-center justify-between pl-4 mb-6">
         <input
-          placeholder="Enter a task"
+          placeholder={t('home.editTask.input.placeholder')}
           minLength={1}
           maxLength={100}
           className="text-2xl text-ellipsis text-th-primary-dark outline-none focus:border-b-2 focus:border-th-accent-medium pb-1 w-[85%] bg-th-background placeholder:text-th-primary-dark placeholder:opacity-40"
@@ -110,7 +112,7 @@ export const EditTask: React.FC<EditTaskProps> = ({
         <textarea
           onChange={(e) => onTextAreaChange(e.target.value)}
           value={selectedTask?.description || ''}
-          placeholder="Task description"
+          placeholder={t('home.editTask.textarea.placeholder')}
           rows={30}
           className="bg-th-background p-0 w-full h-[90%] focus:border-transparent focus:ring-0 resize-none border-transparent outline-none text-sm text-th-primary-medium placeholder:text-th-primary-medium placeholder:opacity-40"
         ></textarea>
