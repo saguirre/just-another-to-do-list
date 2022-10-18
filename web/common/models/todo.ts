@@ -5,6 +5,7 @@ export interface Todo {
   id?: number;
   task?: string;
   description?: string;
+  parentId?: number;
   createdAt?: Date;
   userId?: string;
   updatedAt?: Date;

@@ -45,6 +45,7 @@ model todos {
   id              Int           @id @default(autoincrement())
   task            String        @db.VarChar(100)
   description     String?       @db.VarChar(1000)
+  parentId        Int?
   position        Int           @default(0)
   project         projects?     @relation(fields: [projectId], references: [id])
   projectId       Int?
@@ -78,11 +79,13 @@ model todoPriority {
 
 model tags {
   id        Int        @id @default(autoincrement())
+  parentId  Int?
   name      String     @db.VarChar(100)
   user      users?     @relation(fields: [userId], references: [uuid])
   userId    String?
   createdAt DateTime   @default(now())
   updatedAt DateTime   @default(now())
+  color     String?    @db.VarChar(30)
   todoTags  todoTags[]
 
   @@unique([name, userId])
