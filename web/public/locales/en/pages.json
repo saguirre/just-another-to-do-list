@@ -3,6 +3,7 @@
     "title": "Home",
     "tasks": "Tasks",
     "completed": "Completed",
+    "clearFilters": "Clear Filters",
     "homeDropdown": {
       "hideCompleted": "Hide Completed",
       "showCompleted": "Show Completed",

@@ -27,6 +27,24 @@
   background: var(--accent-dark);
 }
 
+.scrollbar::-webkit-scrollbar {
+  width: 12px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  border-radius: 100vh;
+  background: var(--accent-dark);
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background: var(--accent-light);
+  border-radius: 100vh;
+  border: 4px solid var(--accent-dark);
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-dark);
+}
 :root {
   --background: theme('colors.white');
   --background-secondary: theme('colors.slate.50');

@@ -3,6 +3,7 @@
     "title": "Inicio",
     "tasks": "Tareas",
     "completed": "Completadas",
+    "clearFilters": "Borrar Filtros",
     "homeDropdown": {
       "hideCompleted": "Esconder Completadas",
       "showCompleted": "Mostrar Completadas",

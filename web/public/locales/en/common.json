@@ -22,6 +22,7 @@
   "sidebar": {
     "home": "Home",
     "projects": "Projects",
+    "tags": "Tags",
     "dropdown": {
       "profile": "View Profile",
       "logout": "Logout"

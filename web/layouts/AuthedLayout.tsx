@@ -1,6 +1,6 @@
 import { Transition, Dialog } from '@headlessui/react';
 import Head from 'next/head';
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import {
   ArrowLeftOnRectangleIcon,
@@ -25,7 +25,7 @@ export const AuthedLayout: React.FC<AuthedLayoutProps> = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
   const { t } = useTranslation('common');
   const navigation = [
-    { name: t('sidebar.home'), href: '#', icon: HomeIcon, current: true },
+    { name: t('sidebar.home'), href: '/', icon: HomeIcon, current: true },
     { name: t('sidebar.projects'), href: '#', icon: FolderIcon, current: false },
   ];
 
@@ -148,6 +148,7 @@ export const AuthedLayout: React.FC<AuthedLayoutProps> = ({ children }) => {
             <ThemePopover />
           </div>
         </div>
+
         <div
           className={classNames('flex flex-col flex-1 transition-all duration-300 pb-8', {
             'md:pl-72': !collapsed,

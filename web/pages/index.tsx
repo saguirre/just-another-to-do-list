@@ -13,7 +13,7 @@ import { TodoContext } from '../common/contexts/todo.context';
 import { ServiceContext } from '../common/contexts/service.context';
 import { debounce } from 'lodash';
 import useState from 'react-usestateref';
-import { TbTrashOff } from 'react-icons/tb';
+import { TbFilterOff, TbTrashOff } from 'react-icons/tb';
 import { OnboardingModal } from '../common/components/OnboardingModal';
 import { TaskInput } from '../common/components/TaskInput';
 import { toast } from 'react-toastify';
@@ -22,6 +22,7 @@ import { LoadingWrapper } from '../common/components/LoadingWrapper';
 import { Tag } from '../common/models/tag';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { TagContext } from '../common/contexts/tag.context';
 
 const Home: NextPage = () => {
   const { t } = useTranslation(['pages', 'common']);
@@ -29,7 +30,8 @@ const Home: NextPage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [homeMenuOptions, setHomeMenuOptions] = useState<OptionMenuItem[]>([]);
-  const { todos, setTodos } = useContext(TodoContext);
+  const { todos, setTodos, todoFilter, setTodoFilter, filterActive, setFilterActive } = useContext(TodoContext);
+  const { tags, setTags } = useContext(TagContext);
   const { todoService } = useContext(ServiceContext);
   const [showCompleted, setShowCompleted] = useState<boolean>(true);
   const [showDescription, setShowDescription] = useState<boolean>(false);
@@ -40,8 +42,7 @@ const Home: NextPage = () => {
   const [autoSaving, setAutosaving] = useState<boolean>(false);
   const [onboardingModalOpen, setOnboardingModalOpen] = useState<boolean>(false);
   const [autoSaved, setAutosaved] = useState<boolean>(true);
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [suggestions, setSuggestions] = useState<Tag[]>([]);
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [selectedPriority, setSelectedPriority] = useState<todoPriority | undefined>({ id: 4, name: 'None' });
   const user = useUser();
   const debounceUpdateTodo = useCallback(
@@ -69,8 +70,8 @@ const Home: NextPage = () => {
       const optimisticTodo = { ...newTodo, id: 99999999 * Math.random() };
       setTodos((current: Todo[]): Todo[] => [...current, optimisticTodo]);
       setNewTodoString('');
-      const tagsToSend = tags;
-      setTags([]);
+      const tagsToSend = selectedTags;
+      setSelectedTags([]);
       setSelectedPriority({ id: 4, name: t('common.priorities.none') });
       const addedTodo = await todoService?.createTodo(newTodo, user?.id, tagsToSend, selectedPriority);
 
@@ -83,6 +84,12 @@ const Home: NextPage = () => {
             return todo;
           })
         );
+        setTags((current: Tag[]) => [
+          ...current,
+          ...(addedTodo.todoTags
+            ?.filter((todoTag) => !tags.some((tag) => tag.name?.toLowerCase() === todoTag.tag.name?.toLowerCase()))
+            ?.map((todoTag) => ({ ...todoTag.tag })) || []),
+        ]);
       } else {
         toast.error('There was an error adding your task');
         setTodos((current: Todo[]): Todo[] => current.filter((todo) => todo.id !== optimisticTodo.id));
@@ -335,16 +342,30 @@ const Home: NextPage = () => {
             setSelectedPriority={setSelectedPriority}
             selectedPriority={selectedPriority}
             setTags={setTags}
-            suggestions={suggestions}
+            selectedTags={selectedTags}
+            setSelectedTags={setSelectedTags}
             onKeyDown={(e) => addNewTodo(e)}
             onChange={(value: string) => setNewTodoString(value)}
             value={newTodoString}
             disabled={!user}
           />
+          {filterActive && (
+            <button
+              className="flex flex-row items-center justify-center gap-2 bg-th-background-secondary hover:bg-th-background-third rounded-md p-2 text-th-primary-medium text-sm"
+              onClick={() => {
+                setTodoFilter(() => () => true);
+                setFilterActive(false);
+              }}
+            >
+              {t('home.clearFilters')}
+              <TbFilterOff className="h-5 w-5" />
+            </button>
+          )}
           <div className="flex flex-col w-full items-start justify-start">
             <TodoDisclosure
               title={t('home.tasks')}
               todos={todos
+                .filter((todo: Todo) => todoFilter(todo))
                 .sort((a, b) => (a.deleted ? 1 : -1))
                 .filter((todoFromList) => todoFromList.status === status.TODO)}
               setTodos={setTodos}
@@ -361,6 +382,7 @@ const Home: NextPage = () => {
               <TodoDisclosure
                 title={t('home.completed')}
                 todos={todos
+                  .filter((todo: Todo) => todoFilter(todo))
                   .sort((a, b) => (a.deleted ? 1 : -1))
                   .filter((todoFromList) => todoFromList.status === status.COMPLETED)}
                 setTodos={setTodos}

@@ -10,8 +10,12 @@ import { useSessionContext, useUser } from '@supabase/auth-helpers-react';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Fragment } from 'react';
+import { Fragment, useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ServiceContext } from '../contexts/service.context';
+import { TagContext } from '../contexts/tag.context';
+import { TodoContext } from '../contexts/todo.context';
+import { TagVerticalList } from './TagVerticalList';
 
 interface StaticDesktopSidebarProps {
   navigation: any[];
@@ -22,8 +26,21 @@ interface StaticDesktopSidebarProps {
 export const StaticDesktopSidebar: React.FC<StaticDesktopSidebarProps> = ({ navigation, collapsed, setCollapsed }) => {
   const router = useRouter();
   const user = useUser();
+  const { tagService } = useContext(ServiceContext);
+  const { tags, setTags } = useContext(TagContext);
   const { supabaseClient } = useSessionContext();
   const { t } = useTranslation('common');
+
+  const getTags = async () => {
+    const userTags = await tagService?.getTags(user?.id);
+    setTags(userTags || []);
+  };
+
+  useEffect(() => {
+    if (user) {
+      getTags();
+    }
+  }, [user]);
   return (
     <div
       className={classNames(
@@ -63,8 +80,8 @@ export const StaticDesktopSidebar: React.FC<StaticDesktopSidebarProps> = ({ navi
             </button>
           )}
         </div>
-        <div className="flex flex-col flex-grow pt-5 overflow-y-hidden overflow-x-hidden bg-th-accent-dark border-r border-th-accent-medium">
-          <div className="mt-5 flex-1 flex flex-col">
+        <div className="flex flex-col overflow-y-auto overflow-x-hidden scrollbar flex-grow pt-5 bg-th-accent-dark border-r border-th-accent-medium">
+          <div className="mt-5 flex flex-col justify-start">
             {user && (
               <Menu as="div" className="px-2 mt-1 mb-3 relative inline-block text-left">
                 <div>
@@ -137,7 +154,7 @@ export const StaticDesktopSidebar: React.FC<StaticDesktopSidebarProps> = ({ navi
                 </Transition>
               </Menu>
             )}
-            <nav className="flex-1 px-2 pb-4 space-y-1">
+            <nav className="min-h-fit h-fit flex flex-col justify-start px-2 pb-4 space-y-1">
               {navigation.map((item) => (
                 <div key={item.name}>
                   {!collapsed ? (
@@ -174,6 +191,11 @@ export const StaticDesktopSidebar: React.FC<StaticDesktopSidebarProps> = ({ navi
                 </div>
               ))}
             </nav>
+            {user && (
+              <div className="px-2 pb-4 min-h-fit text-ellipsis">
+                <TagVerticalList collapsed={collapsed} setCollapsed={setCollapsed} tags={tags} setTags={setTags} />
+              </div>
+            )}
           </div>
         </div>
       </div>

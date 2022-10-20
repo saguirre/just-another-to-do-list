@@ -21,6 +21,7 @@
   },
   "sidebar": {
     "home": "Inicio",
+    "tags": "Etiquetas",
     "projects": "Proyectos",
     "dropdown": {
       "profile": "Ver Perfil",

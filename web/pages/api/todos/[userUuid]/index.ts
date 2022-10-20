@@ -40,7 +40,7 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
           const createdTags = await prisma.$transaction(
             tags.map((tag) =>
               prisma.tags.upsert({
-                create: { name: tag.name, user: { connect: { uuid: `${userUuid}` } } },
+                create: { name: tag.name, color: tag.color, user: { connect: { uuid: `${userUuid}` } } },
                 update: {},
                 where: { name_userId: { name: tag.name, userId: `${userUuid}` } },
               })

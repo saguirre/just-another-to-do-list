@@ -14,33 +14,42 @@ import 'react-toastify/dist/ReactToastify.css';
 import { toastClasses } from '../common/toast-classes';
 import nextI18NextConfig from '../next-i18next.config.js';
 import { appWithTranslation } from 'next-i18next';
+import { TagService } from '../services/tag.service';
+import { Tag } from '../common/models/tag';
+import { TagContext } from '../common/contexts/tag.context';
 
 const JustAnotherToDoList = ({ Component, pageProps }: AppProps) => {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
   const todoService = new TodoService();
-
-  const serviceContextProps = { todoService };
-  const todoContextProps = { todos, setTodos };
+  const tagService = new TagService();
+  const [todoFilter, setTodoFilter] = useState<(todo: Todo) => boolean>(() => (todo: Todo) => true);
+  const [filterActive, setFilterActive] = useState<boolean>(false);
+  const serviceContextProps = { todoService, tagService };
+  const todoContextProps = { todos, setTodos, todoFilter, setTodoFilter, filterActive, setFilterActive };
+  const tagContextProps = { tags, setTags };
   return (
     <SessionContextProvider supabaseClient={supabaseClient}>
       <ThemeProvider>
         <ServiceContext.Provider value={serviceContextProps}>
           <TodoContext.Provider value={todoContextProps}>
-            <LayoutDecider>
-              <Component {...pageProps} />
-              <ToastContainer
-                position="bottom-left"
-                closeButton={false}
-                toastClassName={(context?: {
-                  type?: TypeOptions;
-                  defaultClassName?: string;
-                  position?: ToastPosition;
-                  rtl?: boolean;
-                }) => toastClasses[context?.type || 'default']}
-                hideProgressBar={true}
-              />
-            </LayoutDecider>
+            <TagContext.Provider value={tagContextProps}>
+              <LayoutDecider>
+                <Component {...pageProps} />
+                <ToastContainer
+                  position="bottom-left"
+                  closeButton={false}
+                  toastClassName={(context?: {
+                    type?: TypeOptions;
+                    defaultClassName?: string;
+                    position?: ToastPosition;
+                    rtl?: boolean;
+                  }) => toastClasses[context?.type || 'default']}
+                  hideProgressBar={true}
+                />
+              </LayoutDecider>
+            </TagContext.Provider>
           </TodoContext.Provider>
         </ServiceContext.Provider>
       </ThemeProvider>

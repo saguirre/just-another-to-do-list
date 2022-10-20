@@ -7,16 +7,18 @@ import { PrioritySpan } from './PrioritySpan';
 import { TagList } from './TagList';
 import { TagListBox } from './TagListBox';
 import { useTranslation } from 'next-i18next';
+import { useRandomColor } from '../hooks/useRandomColor';
 
 interface TaskInputProps {
   disabled?: boolean;
   placeholder?: string;
   value?: string;
   tags: Tag[];
+  selectedTags: Tag[];
   selectedPriority?: todoPriority;
   setSelectedPriority: (priority?: todoPriority) => void;
+  setSelectedTags: (tags: Tag[]) => void;
   setTags: (tags: Tag[]) => void;
-  suggestions: Tag[];
   onChange: (value: string) => void;
   onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
@@ -25,7 +27,8 @@ export const TaskInput: React.FC<TaskInputProps> = ({
   disabled,
   tags,
   setTags,
-  suggestions,
+  selectedTags,
+  setSelectedTags,
   selectedPriority,
   setSelectedPriority,
   placeholder,
@@ -34,6 +37,7 @@ export const TaskInput: React.FC<TaskInputProps> = ({
   onKeyDown,
 }) => {
   const { t } = useTranslation('common');
+  const { color, generateColor } = useRandomColor();
   const [tagDropdownVisible, setTagDropdownVisible] = useState<boolean>(false);
   const [priorityDropdownVisible, setPriorityDropdownVisible] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -70,6 +74,7 @@ export const TaskInput: React.FC<TaskInputProps> = ({
 
   const internalOnKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === TAG_INDICATOR) {
+      generateColor();
       setTagDropdownVisible(!tagDropdownVisible);
       return;
     } else if (event.key === PRIORITY_INDICATOR) {
@@ -98,9 +103,20 @@ export const TaskInput: React.FC<TaskInputProps> = ({
       const splitVal = value?.split('#');
       if (
         splitVal?.[splitVal?.length - 1]?.length > 0 &&
-        !tags.some((tag) => tag.name?.toLowerCase() === splitVal?.[splitVal.length - 1]?.toLowerCase())
+        !tags.some((tag) => tag.name?.toLowerCase()?.includes(splitVal?.[splitVal.length - 1]?.toLowerCase()))
       ) {
-        setTags([...tags, { id: tags.length + 1, name: splitVal?.[splitVal?.length - 1] || '' }]);
+        setSelectedTags([
+          ...selectedTags,
+          { id: tags.length + 1, name: splitVal?.[splitVal?.length - 1] || '', color },
+        ]);
+        onChange(splitVal?.[0] || '');
+      } else if (splitVal?.[splitVal?.length - 1]?.length > 0) {
+        const alreadyAddedTodo = tags.find((tag) =>
+          tag.name?.toLowerCase()?.includes(splitVal?.[splitVal.length - 1]?.toLowerCase())
+        );
+        if (alreadyAddedTodo) {
+          setSelectedTags([...selectedTags, alreadyAddedTodo]);
+        }
         onChange(splitVal?.[0] || '');
       }
       return;
@@ -143,8 +159,8 @@ export const TaskInput: React.FC<TaskInputProps> = ({
           'relative flex flex-row items-center h-full justify-start gap-2 text-base w-full px-3 py-2 focus:ring-th-accent-medium focus:ring-1 focus:outline-none placeholder:text-th-primary-dark placeholder:opacity-30 text-th-primary-medium border border-th-accent-medium bg-th-background',
           {
             'opacity-50': disabled,
-            'rounded-t-lg': tags?.length > 0,
-            'rounded-lg': tags?.length === 0,
+            'rounded-t-lg': selectedTags?.length > 0,
+            'rounded-lg': selectedTags?.length === 0,
           }
         )}
       >
@@ -176,12 +192,15 @@ export const TaskInput: React.FC<TaskInputProps> = ({
           suggestions={priorities}
         />
         <TagListBox
-          suggestions={suggestions}
+          color={color}
+          suggestions={tags}
           searchString={value}
           open={tagDropdownVisible && !!value && value?.length > 0 && value.includes('#')}
         />
       </div>
-      {tags && tags?.length > 0 && <TagList className="bg-th-background-secondary" tags={tags} setTags={setTags} />}
+      {selectedTags && selectedTags?.length > 0 && (
+        <TagList className="bg-th-background-secondary" tags={selectedTags} setTags={setSelectedTags} />
+      )}
     </div>
   );
 };
