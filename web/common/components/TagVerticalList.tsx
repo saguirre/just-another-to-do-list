@@ -74,24 +74,22 @@ export const TagVerticalList: React.FC<TagVerticalListProps> = ({
                         setFilterActive(true);
                       }}
                       key={tag?.id + tag?.name}
-                      className="py-1 hover:cursor-pointer text-th-primary-light hover:bg-th-background-secondary rounded-md hover:pl-2 hover:scale-105 hover:translate-x-1.5 w-[95%] transition-all"
+                      className="flex-shrink-0 py-1 hover:cursor-pointer text-th-primary-light hover:bg-th-background-secondary rounded-md hover:pl-2 hover:scale-105 hover:translate-x-1.5 w-[95%] transition-all"
                     >
                       <span
                         //@ts-ignore
                         className={classNames(
-                          'flex flex-row items-center justify-between gap-2 w-full text-ellipsis flex-nowrap rounded-full px-2.5 py-1 font-semibold text-sm text-th-primary-light',
+                          'flex flex-row items-center justify-between gap-2 flex-nowrap rounded-full px-2.5 py-1 font-semibold text-sm text-th-primary-light',
                           {
                             'bg-th-background': !tag?.color?.length,
                           }
                         )}
                       >
-                        <div className="w-fit flex flex-row items-center justify-start gap-2">
-                          <div className="w-fit h-fit relative">
-                            <TagIcon className="h-4 w-4" style={{ color: `#${tag.color}` }} />
-                            <TagIconOutline className="absolute z-10 top-0 left-0 h-4 w-4 text-th-primary-light" />
-                          </div>
+                        <div className="w-full flex flex-row items-center justify-start gap-2">
+                          <TagIconOutline className="h-4 w-4 text-th-primary-light" />
                           <span className="text-ellipsis">{tag.name}</span>
                         </div>
+                        <div className="rounded-full h-2 w-2" style={{ backgroundColor: `#${tag.color}` }}></div>
                       </span>
                     </div>
                   );
