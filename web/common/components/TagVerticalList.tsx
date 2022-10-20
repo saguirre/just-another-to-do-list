@@ -14,9 +14,16 @@ interface TagVerticalListProps {
   collapsed: boolean;
   setCollapsed: (collapsed: boolean) => void;
   className?: string;
+  isMobile?: boolean;
 }
 
-export const TagVerticalList: React.FC<TagVerticalListProps> = ({ tags, collapsed, setCollapsed, className }) => {
+export const TagVerticalList: React.FC<TagVerticalListProps> = ({
+  tags,
+  collapsed,
+  isMobile,
+  setCollapsed,
+  className,
+}) => {
   const { t } = useTranslation('common');
   const { setTodoFilter, setFilterActive } = useContext(TodoContext);
   return (
@@ -58,6 +65,9 @@ export const TagVerticalList: React.FC<TagVerticalListProps> = ({ tags, collapse
                   return (
                     <div
                       onClick={() => {
+                        if (isMobile) {
+                          setCollapsed(false);
+                        }
                         setTodoFilter(
                           () => (todo: Todo) => todo?.todoTags?.some((todoTag) => todoTag?.tag?.id === tag?.id) || false
                         );
