@@ -18,10 +18,12 @@ interface PrioritySpanProps {
   setSelectedPriority: (priority?: todoPriority) => void;
   hoverable?: boolean;
   selectedPriority?: todoPriority;
+  size?: 'sm' | 'md';
 }
 export const PrioritySpan: React.FC<PrioritySpanProps> = ({
   selectedPriority,
   setSelectedPriority,
+  size = 'md',
   hoverable = true,
 }) => {
   return (
@@ -29,7 +31,7 @@ export const PrioritySpan: React.FC<PrioritySpanProps> = ({
       onClick={() => setSelectedPriority({ id: 4, name: 'None' })}
       className={classNames(
         hoverable ? 'hover:cursor-pointer hover:bg-rose-500 hover:text-th-primary-medium' : '',
-        priorityClass(selectedPriority)
+        size === 'md' ? priorityClass(selectedPriority) : priorityClass(selectedPriority) + ' text-xs'
       )}
     >
       {selectedPriority?.name}

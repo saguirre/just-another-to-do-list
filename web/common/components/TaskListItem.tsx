@@ -8,6 +8,8 @@ import { OptionMenuItem } from '../models/option-menu-item';
 import { forwardRef } from 'react';
 import { VscGrabber } from 'react-icons/vsc';
 import { DraggableAttributes } from '@dnd-kit/core';
+import { TagList } from './TagList';
+import { PrioritySpan } from './PrioritySpan';
 
 interface TaskListItemProps extends Partial<DraggableAttributes> {
   id: any;
@@ -116,6 +118,23 @@ export const TaskListItem: React.FC<TaskListItemProps> = forwardRef<HTMLDivEleme
                       </span>
                     </div>
                   )}
+                  <div className="flex flex-row items-center justify-start gap-2">
+                    <div className="w-fit">
+                      <PrioritySpan
+                        size="sm"
+                        hoverable={false}
+                        selectedPriority={todo?.todosPriority}
+                        setSelectedPriority={() => {}}
+                      />
+                    </div>
+                    <TagList
+                      size="sm"
+                      hoverable={false}
+                      className="bg-opacity-95"
+                      tags={todo?.todoTags?.map((todoTag) => ({ ...todoTag.tag })) || []}
+                      setTags={() => {}}
+                    />
+                  </div>
                 </div>
               </div>
             </div>

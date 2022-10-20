@@ -1,5 +1,5 @@
 import { Disclosure, Transition } from '@headlessui/react';
-import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, ChevronRightIcon, TagIcon as TagIconOutline } from '@heroicons/react/24/outline';
 import { TagIcon } from '@heroicons/react/24/solid';
 import classNames from 'classnames';
 import { useTranslation } from 'next-i18next';
@@ -23,14 +23,14 @@ export const TagVerticalList: React.FC<TagVerticalListProps> = ({ tags, collapse
     <Disclosure defaultOpen>
       {({ open }) => (
         <>
-          <Disclosure.Button className="flex flex-row items-center justify-start transition-all duration-300 gap-2 px-2 py-2 hover:bg-th-accent-medium rounded-md w-full">
+          <Disclosure.Button className="flex flex-row items-center justify-start transition-all duration-300 gap-2 px-2 py-2 hover:bg-th-background-secondary rounded-md w-full">
             {open && !collapsed ? (
-              <ChevronDownIcon className="h-3 w-3 text-th-primary-extra-light" />
+              <ChevronDownIcon className="h-3 w-3 text-th-primary-light" />
             ) : (
-              <ChevronRightIcon className="h-3 w-3 text-th-primary-extra-light" />
+              <ChevronRightIcon className="h-3 w-3 text-th-primary-light" />
             )}
-            <TagIcon className="h-5 w-5 text-th-primary-extra-light" />
-            {!collapsed && <h2 className="text-th-primary-extra-light">{t('sidebar.tags')}</h2>}
+            <TagIcon className="h-5 w-5 text-th-primary-light" />
+            {!collapsed && <h2 className="text-th-primary-light">{t('sidebar.tags')}</h2>}
           </Disclosure.Button>
 
           <Transition
@@ -64,24 +64,21 @@ export const TagVerticalList: React.FC<TagVerticalListProps> = ({ tags, collapse
                         setFilterActive(true);
                       }}
                       key={tag?.id + tag?.name}
-                      className="py-1 hover:cursor-pointer text-th-primary-extra-light hover:bg-th-accent-medium rounded-md hover:pl-2 hover:scale-105 hover:translate-x-1.5 w-[95%] transition-all"
+                      className="py-1 hover:cursor-pointer text-th-primary-light hover:bg-th-background-secondary rounded-md hover:pl-2 hover:scale-105 hover:translate-x-1.5 w-[95%] transition-all"
                     >
                       <span
                         //@ts-ignore
                         className={classNames(
-                          'flex flex-row items-center justify-between gap-2 w-full text-ellipsis flex-nowrap rounded-full px-2.5 py-1 font-semibold text-sm text-th-primary-extra-light',
+                          'flex flex-row items-center justify-between gap-2 w-full text-ellipsis flex-nowrap rounded-full px-2.5 py-1 font-semibold text-sm text-th-primary-light',
                           {
-                            'bg-th-accent-dark': !tag?.color?.length,
+                            'bg-th-background': !tag?.color?.length,
                           }
                         )}
                       >
                         <div className="w-fit flex flex-row items-center justify-start gap-2">
                           <div className="w-fit h-fit relative">
-                            <TagIcon className="h-5 w-5" />
-                            <div
-                              className="absolute inset-x-1/3 inset-y-[6.5px] h-1.5 w-1.5 rounded-full"
-                              style={{ backgroundColor: `#${tag.color}` }}
-                            ></div>
+                            <TagIcon className="h-4 w-4" style={{ color: `#${tag.color}` }} />
+                            <TagIconOutline className="absolute z-10 top-0 left-0 h-4 w-4 text-th-primary-light" />
                           </div>
                           <span className="text-ellipsis">{tag.name}</span>
                         </div>
