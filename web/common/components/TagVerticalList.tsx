@@ -74,7 +74,7 @@ export const TagVerticalList: React.FC<TagVerticalListProps> = ({
                         setFilterActive(true);
                       }}
                       key={tag?.id + tag?.name}
-                      className="flex-shrink-0 py-1 hover:cursor-pointer text-th-primary-light hover:bg-th-background-secondary rounded-md hover:pl-2 hover:scale-105 hover:translate-x-1.5 w-[95%] transition-all"
+                      className="flex-shrink-0 py-1 hover:cursor-pointer text-th-primary-light hover:bg-th-background-secondary rounded-md hover:pl-2 hover:scale-105 hover:translate-x-1.5 w-full transition-all"
                     >
                       <span
                         //@ts-ignore
